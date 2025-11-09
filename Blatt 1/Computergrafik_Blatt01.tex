@@ -74,22 +74,19 @@ Nico Reng 3731402\\
 Viorel Tsigos 3720183}
 \begin{document}
 \section*{Aufgabe 1:}
-\begin{enumerate}
-  \item Siehe Code
-  \item Siehe Code
-\end{enumerate}
+Siehe Code
 
 \section*{Aufgabe 2:}
 \begin{enumerate}[label=2.1.\arabic*]
-  \item Wir haben uns hier für ... entschieden, da
+  \item Wir haben uns hier für den Container "Array" entschieden, da wir hier eine feste Größe bestimmen können, was in der Aufgabenstellung mit 3 Punkten vorgegeben ist. Wir haben hier auch keinen Laufzeit-Overhead also müssen wir nicth unsere Kapazität prüfen wie bei einem Vektor Container. Hierdurch haben wir mehr Leistung.
   \item Siehe Code
 \end{enumerate}
 \begin{enumerate}[label=2.2.\arabic*]
-  \item Wir haben uns hier für ... entschieden, da
+  \item Hier haben wir "List" als Container gewählt. Erstmals ist mit einer doppelt verketteten Liste das Einfügen und Löschen in $\bigO(1)$ möglich. Der Hauptgrund war aber, dass wenn wir einen Punkt in der List löschen, verlieren wir nicht die Referenz auf die anderen anliegenden Punkte. Bei einem Vektor z.B. würden wir die Referenz zu den anderen Punkten verlieren.  
   \item Siehe Code
 \end{enumerate}
 \begin{enumerate}[label=2.3.\arabic*]
-  \item Wir haben uns hier für ... entschieden, da
+  \item Hier haben wir jetzt den Container "Vector" verwendet. Wir haben hier auch wieder einen niedrigeren Overhead. Brauchen also keinen zusätzlichen Speicherplatz für einen Pointer. Wir speichern nur die Daten. Außerdem wenn wir über die Liste der Linienzüge iterieren, kann der CPU die Datenblöcke schneller abrufen und wir haben schnellere Verabeitungszeiten.
   \item Siehe Code
   \item Siehe Code
 \end{enumerate}
@@ -97,7 +94,7 @@ Viorel Tsigos 3720183}
 \section*{Aufgabe 3:}
 \begin{enumerate}
   \item Siehe Code
-  \item Begründung 1 und 2
+  \item Das hat mit den Referenzen zu tun. Wir befüllen ja die Matrix mit Daten aus matrix1.txt und matrix2.txt. Wir übergeben das hier als Nicht-konstante Referenz. Heißt also dass wir das Objekt MatrixInt verändern können. Dadurch entstehen keine unnötigen Kopien des Matrix-Objekts. Das würde z.B. bei ganz großen Matrizen zu hohem Speicherverbrauch führen und ggf. auch zu Performanceproblemen (Leistung fällt ab). Also Vermeidung von Kopien und durch die const ist auch sichergestellt, dass die Funktion die übergebene Matrix nicht aus Versehen verändern kann. Ein Vorteil von RAII ist die automatische Speicherverwaltung, also die automatische Freigabe einer Ressource $\Rightarrow$ weniger Ressourcenlecks.
 \end{enumerate}
 \section*{Aufgabe 4:}
 \begin{enumerate}
