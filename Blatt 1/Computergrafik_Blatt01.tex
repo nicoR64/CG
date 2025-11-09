@@ -78,15 +78,15 @@ Siehe Code
 
 \section*{Aufgabe 2:}
 \begin{enumerate}[label=2.1.\arabic*]
-  \item Wir haben uns hier für den Container "Array" entschieden, da wir hier eine feste Größe bestimmen können, was in der Aufgabenstellung mit 3 Punkten vorgegeben ist. Wir haben hier auch keinen Laufzeit-Overhead also müssen wir nicth unsere Kapazität prüfen wie bei einem Vektor Container. Hierdurch haben wir mehr Leistung.
+  \item Wir haben uns hier für den Container \texttt{std::array} entschieden, da wir genau drei Koordinaten \texttt{x,y,z} abspeichern wollen. Wir haben hier auch keinen Laufzeit-Overhead, da unsere Größe zur Laufzeit nie angepasst werden muss.
   \item Siehe Code
 \end{enumerate}
 \begin{enumerate}[label=2.2.\arabic*]
-  \item Hier haben wir "List" als Container gewählt. Erstmals ist mit einer doppelt verketteten Liste das Einfügen und Löschen in $\bigO(1)$ möglich. Der Hauptgrund war aber, dass wenn wir einen Punkt in der List löschen, verlieren wir nicht die Referenz auf die anderen anliegenden Punkte. Bei einem Vektor z.B. würden wir die Referenz zu den anderen Punkten verlieren.  
+  \item Hier haben wir \texttt{std::list} als Container gewählt. Erstmals ist mit einer doppelt verketteten Liste das Einfügen am Ende der Liste in $\bigO(1)$ möglich. Wir müssen hierfür das Löschen an einer beliebigen Position in $\bigO(n)$ in Anspruch nehmen. Dafür entstehen beim Löschen von Elementen keine Löcher im Memory-Block und wir können mit einem Iterator sauber über alle Punkte iterieren. Die Abfrage nach einzelnen Punkten muss nicht berücksichtigt werden.
   \item Siehe Code
 \end{enumerate}
 \begin{enumerate}[label=2.3.\arabic*]
-  \item Hier haben wir jetzt den Container "Vector" verwendet. Wir haben hier auch wieder einen niedrigeren Overhead. Brauchen also keinen zusätzlichen Speicherplatz für einen Pointer. Wir speichern nur die Daten. Außerdem wenn wir über die Liste der Linienzüge iterieren, kann der CPU die Datenblöcke schneller abrufen und wir haben schnellere Verabeitungszeiten.
+  \item Hier haben wir den Container \texttt{std::vector} verwendet. Da wir zur Laufzeit fortlaufend neue Linienzüge hinzufügen wollen, brauchen wir eine dynamische Datenstruktur, die wachsen kann. Hierfür ist der Vector geeignet, insbesondere weil die Linienzüge nicht mehr entfernt werden sollen und wir somit immer alle Linienzüge in einem zusammenhängenden Block in Memory stehen haben.
   \item Siehe Code
   \item Siehe Code
 \end{enumerate}
@@ -94,7 +94,7 @@ Siehe Code
 \section*{Aufgabe 3:}
 \begin{enumerate}
   \item Siehe Code
-  \item Das hat mit den Referenzen zu tun. Wir befüllen ja die Matrix mit Daten aus matrix1.txt und matrix2.txt. Wir übergeben das hier als Nicht-konstante Referenz. Heißt also dass wir das Objekt MatrixInt verändern können. Dadurch entstehen keine unnötigen Kopien des Matrix-Objekts. Das würde z.B. bei ganz großen Matrizen zu hohem Speicherverbrauch führen und ggf. auch zu Performanceproblemen (Leistung fällt ab). Also Vermeidung von Kopien und durch die const ist auch sichergestellt, dass die Funktion die übergebene Matrix nicht aus Versehen verändern kann. Ein Vorteil von RAII ist die automatische Speicherverwaltung, also die automatische Freigabe einer Ressource $\Rightarrow$ weniger Ressourcenlecks.
+  \item Es werden mit \texttt{\&} und \texttt{const\&} eine Referenz auf ein Matrixobjekt übergeben. Würden wir hier das Konzept der Referenz nicht verwenden, so müssten wir eine vollständige Kopie des Objekts erstellen und schließlich auf der Kopie weiterarbeiten, wobei bei großen Matrizen ein beträchtlicher Performance-Overhead entstehen kann. Zusätzlich sorgen wir mit \texttt{const} dafür, das wir die an der Referenz gespeicherte Matrix nicht durch eine andere Matrix ersetzen können und auch die eigenen Einträge der Matrix nicht anpassen dürfen. Ein Vorteil von RAII ist die automatische Speicherverwaltung, also die automatische Freigabe einer Ressource, sodass weniger Ressourcenlecks entstehen können.
 \end{enumerate}
 \section*{Aufgabe 4:}
 \begin{enumerate}
