@@ -9,6 +9,11 @@
 #include <fstream>
 #include <vector>
 
+
+//Typparameter entscheidet hier über den verwendeten Farbraum einer image-Instanz.
+//cg::image<color_space_t::Gray> picture(WIDTH, HEIGHT)     instanziiert beispielsweise ein Graustufen-Bild 
+//Aktuelle Farbräume sind: RGB, HSV, Graustufen und Schwarz-Weiß  ->  Die Enum-Werte sind in ImageTraits.hpp definiert
+
 namespace cg
 {
 	/// <summary>

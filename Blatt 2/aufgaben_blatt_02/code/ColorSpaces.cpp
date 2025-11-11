@@ -9,13 +9,14 @@
 #include <iostream>
 #include <string>
 
-int main(const int argc, const char** argv)
+int main(const int argc, const char **argv)
 {
     // Read command line arguments
     if (argc != 3)
     {
         std::cerr << "Error: No input and output file specified" << std::endl;
-        std::cout << "Call program with parameters <source> <target>" << std::endl << std::endl;
+        std::cout << "Call program with parameters <source> <target>" << std::endl
+                  << std::endl;
 
         return 1;
     }
@@ -24,7 +25,8 @@ int main(const int argc, const char** argv)
     std::string target_file(argv[2]);
 
     std::cout << "Source file: " << source_file << std::endl;
-    std::cout << "Target file: " << target_file << std::endl << std::endl;
+    std::cout << "Target file: " << target_file << std::endl
+              << std::endl;
 
     // Ask user to execute one of the exercises
     unsigned int exercise;
@@ -52,7 +54,7 @@ int main(const int argc, const char** argv)
     return 0;
 }
 
-void aufgabe1(const std::string& source_file, const std::string& target_file)
+void aufgabe1(const std::string &source_file, const std::string &target_file)
 {
     try
     {
@@ -65,9 +67,14 @@ void aufgabe1(const std::string& source_file, const std::string& target_file)
 
         // ...
 
-        std::cout << "File successfully created" << std::endl << std::endl;
+        auto rgb_image = cg::image_io::load_rgb_image(source_file);    // image_io refernziert auf die ImageIO.hpp/cpp
+        auto gray_image = cg::image_converter::rgb_to_gray(rgb_image); // image_converter referenziert Imageconverter.hpp/cpp und * brauchen wir weil rgb_image ein smart pointer ist und müssen den dereferencen sodass wir das image weitergeben und nicht nur die Referenz.
+        cg::image_io::save_grayscale_image(target_file, gray_image);   // make_shared -> Konstruiert das objekt
+
+        std::cout << "File successfully created" << std::endl
+                  << std::endl;
     }
-    catch (const std::runtime_error& e)
+    catch (const std::runtime_error &e)
     {
         std::cerr << e.what() << std::endl;
     }
@@ -77,7 +84,7 @@ void aufgabe1(const std::string& source_file, const std::string& target_file)
     }
 }
 
-void aufgabe2(const std::string& source_file, const std::string& target_file)
+void aufgabe2(const std::string &source_file, const std::string &target_file)
 {
     try
     {
@@ -91,9 +98,14 @@ void aufgabe2(const std::string& source_file, const std::string& target_file)
 
         // ...
 
-        std::cout << "File successfully created" << std::endl << std::endl;
+        auto gray_image = cg::image_io::load_grayscale_image(source_file);    // image_io refernziert auf die ImageIO.hpp/cpp
+        auto bw_image = cg::image_converter::gray_to_bw(gray_image); // image_converter referenziert Imageconverter.hpp/cpp und * brauchen wir weil rgb_image ein smart pointer ist und müssen den dereferencen sodass wir das image weitergeben und nicht nur die Referenz.
+        cg::image_io::save_bw_image(target_file, bw_image);   // make_shared -> Konstruiert das objekt
+
+        std::cout << "File successfully created" << std::endl
+                  << std::endl;
     }
-    catch (const std::runtime_error& e)
+    catch (const std::runtime_error &e)
     {
         std::cerr << e.what() << std::endl;
     }
@@ -103,7 +115,7 @@ void aufgabe2(const std::string& source_file, const std::string& target_file)
     }
 }
 
-void aufgabe3(const std::string& source_file, const std::string& target_file)
+void aufgabe3(const std::string &source_file, const std::string &target_file)
 {
     try
     {
@@ -117,9 +129,15 @@ void aufgabe3(const std::string& source_file, const std::string& target_file)
 
         // ...
 
-        std::cout << "File successfully created" << std::endl << std::endl;
+        auto rgb_image_in = cg::image_io::load_rgb_image(source_file);    // image_io refernziert auf die ImageIO.hpp/cpp
+        auto hsv_image = cg::image_converter::rgb_to_hsv(rgb_image_in); //
+        auto rgb_image_out = cg::image_converter::hsv_to_rgb(hsv_image);
+        cg::image_io::save_rgb_image(target_file, rgb_image_out);   // make
+
+        std::cout << "File successfully created" << std::endl
+                  << std::endl;
     }
-    catch (const std::runtime_error& e)
+    catch (const std::runtime_error &e)
     {
         std::cerr << e.what() << std::endl;
     }
@@ -129,7 +147,7 @@ void aufgabe3(const std::string& source_file, const std::string& target_file)
     }
 }
 
-void aufgabe4(const std::string& source_file, const std::string& target_file)
+void aufgabe4(const std::string &source_file, const std::string &target_file)
 {
     try
     {
@@ -144,11 +162,15 @@ void aufgabe4(const std::string& source_file, const std::string& target_file)
         // 5. Save the modified RGB image to the given target file path using a
         //    function from image_io
 
-        // ...
-
-        std::cout << "File successfully created" << std::endl << std::endl;
+        auto rgb_image_in = cg::image_io::load_rgb_image(source_file);    // image_io refernziert auf die ImageIO.hpp/cpp
+        auto hsv_image = cg::image_converter::rgb_to_hsv(rgb_image_in); 
+        auto hsv_image_modified = cg::image_manipulation::modify_in_hsv(hsv_image);
+        auto rgb_image_out = cg::image_converter::hsv_to_rgb(hsv_image_modified);
+        cg::image_io::save_rgb_image(target_file, rgb_image_out);   
+        std::cout << "File successfully created" << std::endl
+                  << std::endl;
     }
-    catch (const std::runtime_error& e)
+    catch (const std::runtime_error &e)
     {
         std::cerr << e.what() << std::endl;
     }

@@ -1,5 +1,8 @@
 #pragma once
 
+
+//Enum-Werte hier Definiert für die Farbräume
+
 namespace cg
 {
 	/// Color space

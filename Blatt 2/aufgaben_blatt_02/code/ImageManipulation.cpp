@@ -32,14 +32,31 @@ cg::image<cg::color_space_t::HSV> cg::image_manipulation::modify_in_hsv(const im
             // 5. Setting the lightness value to 80 % of its previous value
             //    for all other pixels.
 
-            // ...
+            const float ROTATION = 30.0f / 360.0f;
+            hNew = h + ROTATION; // Rotate hue by 30 degrees
 
+            if (hNew > 1.0f)
+            {
+                hNew -= 1.0f;
+            }
+
+            const float HUE_MIN_NORM = 50.0f / 360.0f;  // 50 degrees in [0,1] range
+            const float HUE_MAX_NORM = 100.0f / 360.0f; // 100 degrees in [0,1] range
+
+            if (hNew >= HUE_MIN_NORM && hNew <= HUE_MAX_NORM)
+            {
+                sNew = s * 0.9f; // 90% saturation
+                vNew = v * 0.7f; // 70% lightness
+            }
+            else
+            {
+                sNew = 0.0f;    // zero saturation
+                vNew = v * 0.8f; // 80% lightness
+            }
             modified(i, j)[0] = hNew;
             modified(i, j)[1] = sNew;
             modified(i, j)[2] = vNew;
         }
     }
-
     return modified;
 }
-
