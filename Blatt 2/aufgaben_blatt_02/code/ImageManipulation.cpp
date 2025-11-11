@@ -33,6 +33,22 @@ cg::image<cg::color_space_t::HSV> cg::image_manipulation::modify_in_hsv(const im
             //    for all other pixels.
 
             // ...
+            hNew = (h * 360 + 30);
+
+            if (hNew >= 360) {
+                hNew -= 360;
+            }
+
+            if (hNew < 50 || hNew > 100) {
+                sNew = 0.f;
+                vNew *= 0.8f;
+            }
+            else {
+                sNew *= 0.9f;
+                vNew *= 0.7f;
+            }
+
+            hNew /= 360.f;
 
             modified(i, j)[0] = hNew;
             modified(i, j)[1] = sNew;

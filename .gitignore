@@ -120,3 +120,5 @@ nb-configuration.xml
 *.fdb_latexmk
 *.fls
 *.gz
+
+/Blatt 2/aufgaben_blatt_02/images

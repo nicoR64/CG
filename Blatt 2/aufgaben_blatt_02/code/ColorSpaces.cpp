@@ -64,6 +64,9 @@ void aufgabe1(const std::string& source_file, const std::string& target_file)
         //    a function from image_io
 
         // ...
+        auto rgb_image = cg::image_io::load_rgb_image(source_file);
+        auto grayscale_image = cg::image_converter::rgb_to_gray(rgb_image);
+        cg::image_io::save_grayscale_image(target_file, grayscale_image);
 
         std::cout << "File successfully created" << std::endl << std::endl;
     }
@@ -90,6 +93,9 @@ void aufgabe2(const std::string& source_file, const std::string& target_file)
         //    a function from image_io
 
         // ...
+        auto grayscale_image = cg::image_io::load_grayscale_image(source_file);
+        auto bw_image = cg::image_converter::gray_to_bw(grayscale_image);
+        cg::image_io::save_bw_image(target_file, bw_image);
 
         std::cout << "File successfully created" << std::endl << std::endl;
     }
@@ -116,6 +122,10 @@ void aufgabe3(const std::string& source_file, const std::string& target_file)
         //    function from image_io
 
         // ...
+        auto rgb_image = cg::image_io::load_rgb_image(source_file);
+        auto hsv_image = cg::image_converter::rgb_to_hsv(rgb_image);
+        auto rgb_image_re = cg::image_converter::hsv_to_rgb(hsv_image);
+        cg::image_io::save_rgb_image(target_file, rgb_image_re);
 
         std::cout << "File successfully created" << std::endl << std::endl;
     }
@@ -145,6 +155,11 @@ void aufgabe4(const std::string& source_file, const std::string& target_file)
         //    function from image_io
 
         // ...
+        auto rgb_image = cg::image_io::load_rgb_image(source_file);
+        auto hsv_image = cg::image_converter::rgb_to_hsv(rgb_image);
+        auto effect_hsv_image = cg::image_manipulation::modify_in_hsv(hsv_image);
+        auto effect_rgb_image = cg::image_converter::hsv_to_rgb(effect_hsv_image);
+        cg::image_io::save_rgb_image(target_file, effect_rgb_image);
 
         std::cout << "File successfully created" << std::endl << std::endl;
     }

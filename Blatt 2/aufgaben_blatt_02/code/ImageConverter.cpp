@@ -27,6 +27,26 @@ cg::image<cg::color_space_t::HSV> cg::image_converter::rgb_to_hsv(const image<co
             // https://de.wikipedia.org/wiki/HSV-Farbraum#Umrechnung_RGB_in_HSV/HSL
 
             // ...
+            if (delta == 0) {
+                h = 0;
+            }
+            else if (c_max == r) {
+                h = 60.f * ((g - b) / delta);
+            }
+            else if (c_max == g) {
+                h = 60.f * (2 + (b - r) / delta);
+            }
+            else if (c_max == b) {
+                h = 60.f * (4 + (r - g) / delta);
+            }
+            if (h < 360) {
+                h += 360;
+            }
+            h /= 360;
+
+            s = c_max == c_min ? 0 : (c_max - c_min) / c_max;
+
+            v = c_max;
 
             converted(i, j)[0] = h;
             converted(i, j)[1] = s;
@@ -58,6 +78,53 @@ cg::image<cg::color_space_t::RGB> cg::image_converter::hsv_to_rgb(const image<co
             // https://de.wikipedia.org/wiki/HSV-Farbraum#Umrechnung_HSV_in_RGB
 
             // ...
+            int h_i = std::floor(h * 6); // H = |_ h * 360 / 60 _|
+            float f = h * 6 - h_i;
+            float p = v * (1 - s);
+            float q = v * (1 - s * f);
+            float t = v * (1 - s * (1 - f));
+
+            switch (h_i % 6)
+            {
+            case 0:
+                r = v;
+                g = t;
+                b = p;
+                break;
+
+            case 1:
+                r = q;
+                g = v;
+                b = p;
+                break;
+
+            case 2:
+                r = p;
+                g = v;
+                b = t;
+                break;
+
+            case 3:
+                r = p;
+                g = q;
+                b = v;
+                break;
+
+            case 4:
+                r = t;
+                g = p;
+                b = v;
+                break;
+
+            case 5:
+                r = v;
+                g = p;
+                b = q;
+                break;
+
+            default:
+                break;
+            }
 
             converted(i, j)[0] = r;
             converted(i, j)[1] = g;
@@ -82,9 +149,7 @@ cg::image<cg::color_space_t::Gray> cg::image_converter::rgb_to_gray(const image<
     {
         for (unsigned int i = 0; i < original.get_width(); ++i)
         {
-
-            // converted(i, j)[0] = ...
-
+            converted(i, j)[0] = original(i, j)[0] * 0.299 + original(i, j)[1] * 0.587 + original(i, j)[2] * 0.114;
         }
     }
 
@@ -106,9 +171,8 @@ cg::image<cg::color_space_t::BW> cg::image_converter::gray_to_bw(const image<col
     {
         for (unsigned int i = 0; i < original.get_width(); ++i)
         {
-
-            // converted(i, j)[0] = ...
-
+            auto grayscale = original(i, j)[0] * 0.299 + original(i, j)[1] * 0.587 + original(i, j)[2] * 0.114;
+            converted(i, j)[0] = grayscale < 0.5 ? 0 : 1;
         }
     }
 
