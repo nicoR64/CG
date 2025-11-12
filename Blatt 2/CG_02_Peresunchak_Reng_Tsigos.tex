@@ -73,6 +73,46 @@ Wintersemester 2025/26\\
 Nico Reng 3731402\\
 Viorel Tsigos 3720183}
 \begin{document}
-\section*{TODOs}
+\section*{Aufgabe 1 - 4:}
+Siehe Code
 
+\section*{Aufgabe 5:}
+\begin{enumerate}
+  \item Durch die sehr geringe Helligkeit in der Nacht, bekommen die Zapfen im Auge die für das Farbsehen verantwortlich sind, zu wenig Licht ab. D.h. durch zu wenig Licht können die Zapfen nicht mehr richtig arbeiten und die Farbwahrnehmung ist stark eingeschränkt. Die Stäbchen hingegen, brauchen weniger Licht und sind eher lichtempflindlich. Die Stäbchen sind dafür verantwortlich, für die Hell-Dunkel-Wahrnehmung. Also sieht man in der Nacht eher Grautöne und weniger Farben, deshalb sind nachts alle Katzen grau.
+  \item Dadurch dass die helle Cyan-ähnlihce Schriftfarbe auf einem weißen Hintergrund sehr wenig Kontrast aufweist, ist es für das Auge schwer die Schrift zu erkennen. Dadurch dass die beiden Farben eine sehr hohe Luminaz haben, verschwimmt deshalb die Schrift mit dem Hintergrund. Wir wissen die Luminazgleichung lautet: 
+  \begin{align*}
+    Y = 0.2126 \cdot R + 0.7152 \cdot G + 0.0722 \cdot B
+  \end{align*}
+  Wir normalisieren zuerst die RGB-Werte, also von 0-255 auf 0-1: \\ \\
+  \underline{Cyan-ähnliche Schrift:} 
+  \begin{align*}
+    R_c = 100/255 \approx 0.392 \\
+    G_c = 255/255 \approx 0.941 \\
+    B_c = 255/255 = 1 \\
+    \end{align*}
+
+  \underline{Weißer Hintergrund:} 
+  \begin{align*}
+    R_w = 255/255 = 1 \\
+    G_w = 255/255 = 1 \\
+    B_w = 255/255 = 1 \\
+  \end{align*}
+  Jetzt berechnen wir die Luminaz für die Cyan-ähnliche Schrift und für den weißen Hintergrund:
+  \begin{align*}
+    Y_c &= 0.2126 \cdot 0.392 + 0.7152 \cdot 0.941 + 0.0722 \cdot 1 \\
+    &\approx 0.0833 + 0.6730 + 0.0722 \\
+    &\approx 0.8285
+  \end{align*}
+  \begin{align*}
+    Y_w &= 0.2126 \cdot 1 + 0.7152 \cdot 1 + 0.0722 \cdot 1 \\
+    &\approx 0.2126 + 0.7152 + 0.0722 \\
+    &\approx 1
+  \end{align*}
+  Wir können jetzt noch den Kontrast zwischen den beiden Farben berechnen:
+  \begin{align*}
+    \text{Kontrast} = \frac{Y_w }{Y_c} = \frac{1}{0.8285} \approx 1.149 : 1 \approx 1.15 : 1
+  \end{align*}
+  Dadurch dass die beiden Farben einen sehr geringen Kontrast von ca. 1.15:1 haben, ist es für das Auge schwer die Schrift zu erkennen. 
+  \item Wir haben drei verschiedene Typen von Zapfen: S, M und L Zapfen. 
+\end{enumerate}
 \end{document}
