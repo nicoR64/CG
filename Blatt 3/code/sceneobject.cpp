@@ -26,7 +26,7 @@ SceneObject::SceneObject(const Vec3d& color) :
 /**
  * @brief Plane::intersect
  */
-bool Plane::intersect(const Ray &ray, double &t) const
+bool Plane::intersect(const Ray& ray, double& t) const
 {
     double denom = this->_normal.dot(ray.dir);
 
@@ -47,7 +47,7 @@ bool Plane::intersect(const Ray &ray, double &t) const
  * @brief Plane::getSurfaceColor
  * @param p_hit point where the surface was hit
  */
-Vec3d Plane::getSurfaceColor(const Vec3d &p_hit) const
+Vec3d Plane::getSurfaceColor(const Vec3d& p_hit) const
 {
     // generate grey/white chess board pattern
     const double pi = std::acos(-1);
@@ -64,14 +64,28 @@ Vec3d Plane::getSurfaceColor(const Vec3d &p_hit) const
  * @param ray Reference to the ray to be checked for intersection with objects.
  * @param t Reference to the intersection distance along the ray.
  */
-bool Sphere::intersect(const Ray &ray, double &t) const
+bool Sphere::intersect(const Ray& ray, double& t) const
 {
     ///////////
     // TODO
     // Implement a ray-sphere intersection test.
     //
     // cf., lecture slides raytracing 37ff
-    return false;
+    Vec3d q = ray.origin - _center;
+    Vec3d d = ray.dir;
+    double disc = pow(d.dot(q), 2) - d.dot(d) * (q.dot(q) - pow(_radius, 2));
+    if (disc > 0) {
+        t = std::min((-d.dot(q) + sqrt(disc)) / d.dot(d), (-d.dot(q) - sqrt(disc)) / d.dot(d));
+        return true;
+    }
+    else if (disc == 0) {
+        t = (-d.dot(q) + sqrt(disc)) / d.dot(d);
+        return true;
+    }
+    else {
+        t = INFINITY;
+        return false;
+    }
     // END TODO
     ///////////
 }
@@ -79,7 +93,7 @@ bool Sphere::intersect(const Ray &ray, double &t) const
 /**
  * @brief Sphere::getSurfaceColor
  */
-Vec3d Sphere::getSurfaceColor(const Vec3d &p_hit) const
+Vec3d Sphere::getSurfaceColor(const Vec3d& p_hit) const
 {
     return this->_color;
 }

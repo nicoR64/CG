@@ -7,9 +7,11 @@
 #include <memory>
 #include <vector>
 
+#include <stdio.h>
+
 // TODO: Set the test according to your current exercise.
 const static bool TEST_RAY_GENERATION = false;
-const static bool TEST_SPHERE_INTERSECT = false;
+const static bool TEST_SPHERE_INTERSECT = true;
 
 // Random number generation seed
 const static int SEED = 42;
@@ -25,9 +27,9 @@ const static int HEIGHT = 600;
  * @param hitObject The closest object hit.
  * @return true on hit, false otherwise
  */
-bool trace(const Ray &ray,
-           const std::vector<std::shared_ptr<SceneObject>> &objects,
-           double &t_near, std::shared_ptr<SceneObject> &hitObject)
+bool trace(const Ray& ray,
+    const std::vector<std::shared_ptr<SceneObject>>& objects,
+    double& t_near, std::shared_ptr<SceneObject>& hitObject)
 {
     ///////////
     // TODO
@@ -36,7 +38,14 @@ bool trace(const Ray &ray,
     // If any object got hit, store the object closest to the camera in 'hitObject' and the corresponding t (r(t) = ray_origin + t * ray_direction) to the object in 't_near'.
     // END TODO
     ///////////
-
+    hitObject = nullptr;
+    for (auto object : objects) {
+        double t{ INFINITY };
+        if (object.get()->intersect(ray, t) && t < t_near) {
+            t_near = t;
+            hitObject = object;
+        }
+    }
     return (hitObject != nullptr);
 }
 
@@ -48,7 +57,7 @@ bool trace(const Ray &ray,
  * @return The color of a hit object that is closest to the camera.
  *         Return dark blue if no object was hit.
  */
-Vec3d castRay(const Ray &ray, const std::vector<std::shared_ptr<SceneObject>> &objects)
+Vec3d castRay(const Ray& ray, const std::vector<std::shared_ptr<SceneObject>>& objects)
 {
     // Set the background color as dark blue
     Vec3d hitColor(0.0, 0.0, 0.2);
@@ -63,7 +72,12 @@ Vec3d castRay(const Ray &ray, const std::vector<std::shared_ptr<SceneObject>> &o
     // cf., lecture slide raytracing 10ff
     // END TODO
     ///////////
-
+    double t_near{ INFINITY };
+    std::shared_ptr<SceneObject> hitObject{};
+    bool hit = trace(ray, objects, t_near, hitObject);
+    if (hit) {
+        hitColor = hitObject.get()->getSurfaceColor(ray.origin + t_near * ray.dir);
+    }
     return hitColor;
 }
 
@@ -73,7 +87,7 @@ Vec3d castRay(const Ray &ray, const std::vector<std::shared_ptr<SceneObject>> &o
  * @param viewport Size of the framebuffer.
  * @param objects Vector of pointers to all objects contained in the scene.
  */
-void render(const Vec3i viewport, const std::vector<std::shared_ptr<SceneObject>> &objects)
+void render(const Vec3i viewport, const std::vector<std::shared_ptr<SceneObject>>& objects)
 {
     std::vector<Vec3d> framebuffer(static_cast<size_t>(viewport[0] * viewport[1]));
 
@@ -100,6 +114,17 @@ void render(const Vec3i viewport, const std::vector<std::shared_ptr<SceneObject>
     // cf., lecture slides raytracing 30ff
     // END TODO
     ///////////
+
+    int idx{};
+    for (double i = t - (t - b) / (2.0 * HEIGHT); i > b; i -= (t - b) / HEIGHT) {
+        for (double j = l + (r - l) / (2.0 * WIDTH); j < r; j += (r - l) / WIDTH) {
+            Vec3d vec = Vec3d(j, i, -d);
+            Ray ray = Ray();
+            ray.origin = cameraPos;
+            ray.dir = vec;
+            framebuffer[idx++] = (castRay(ray, objects));
+        }
+    }
 
     // Save the framebuffer an a PPM image
     saveAsPPM("./result.ppm", viewport, framebuffer);
