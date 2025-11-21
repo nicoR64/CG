@@ -122,7 +122,7 @@ void render(const Vec3i viewport, const std::vector<std::shared_ptr<SceneObject>
             Ray ray = Ray();
             ray.origin = cameraPos;
             ray.dir = vec;
-            framebuffer[idx++] = (castRay(ray, objects));
+            framebuffer[idx++] = castRay(ray, objects);
         }
     }
 
