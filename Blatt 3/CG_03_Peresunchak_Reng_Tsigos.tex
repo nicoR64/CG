@@ -336,4 +336,19 @@ Jetzt überprüfen wir noch die beiden Bedingungen:
 \end{align*}
 Somit schneidet der Sichtstrahl das Dreieck.
 \end{enumerate}
+
+\section*{Aufgabe 2:}
+\subsection*{2.1}
+\begin{enumerate}
+  \item Siehe Code
+  \item Siehe Code
+  \item Siehe Code
+  \item \underline{Bilder aus dem Übungsblatt:} \\
+  Zuerst sieht man an den Kanten der Kugel harte, sehr pixlige Abstufungen statt einer schönen glatten Linie. Das liegt daran, dass wir nur einen Strahl genau durch die Mitte jedes Pixels schicken anstatt mehrere Strahlen pro Pixel zu verwenden. Ein Pixel wird also entweder getroffen oder nicht. 
+  Das sieht man auch ganz gut an den Kanten des Schachbrettmusters.  \\\\
+  \underline{Lösungsvorschlag:} \\
+  Implentierung von Anti-Aliasing durch Supersampling. Hier schicken wir wie wir in der Vorlesung gelernt haben mehrere Strahlen pro Pixel (also durch zufällige Verteilung innerhalb der Pixelfläche oder ein festes Raster) und bildet den Mittelwert der zurückgegebenen Farben. Das glättet somit die Kanten.
+\end{enumerate}
+\subsection*{2.2}
+Siehe Code
 \end{document}

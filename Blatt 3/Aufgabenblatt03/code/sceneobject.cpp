@@ -66,6 +66,35 @@ Vec3d Plane::getSurfaceColor(const Vec3d &p_hit) const
  */
 bool Sphere::intersect(const Ray &ray, double &t) const
 {
+    Vec3d delta = ray.origin - _center;
+
+    double A = ray.dir.dot(ray.dir);
+    double B = 2.0 * ray.dir.dot(delta);
+    double C = delta.dot(delta) - (_radius * _radius);
+    double discriminant = B * B - 4 * A * C;
+
+    if (discriminant < 0.0)
+    {
+        return false;
+    }
+
+    //Schnittpunkte berechnen 
+    double sqrtD = std::sqrt(discriminant);
+    double t1 = (-B - sqrtD) / (2.0 * A);
+    double t2 = (-B + sqrtD) / (2.0 * A);
+
+    //Suche kleinsten positiven Schnittpunkt
+    if (t1 > 0.0f) 
+    {
+        t = t1;
+        return true;
+    } 
+    else if (t2 > 0.0f) 
+    {
+        t = t2;
+        return true;
+    }
+
     ///////////
     // TODO
     // Implement a ray-sphere intersection test.

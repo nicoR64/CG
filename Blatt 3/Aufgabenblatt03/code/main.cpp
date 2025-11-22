@@ -36,7 +36,23 @@ bool trace(const Ray &ray,
     // If any object got hit, store the object closest to the camera in 'hitObject' and the corresponding t (r(t) = ray_origin + t * ray_direction) to the object in 't_near'.
     // END TODO
     ///////////
+    t_near = std::numeric_limits<double>::max();
+    hitObject = nullptr;
+    bool hit = false;
 
+    for (const auto &object : objects)
+        {
+            double t = 0.0; 
+            if (object->intersect(ray, t))
+        {
+            if (t < t_near && t > 0.0f)
+            {
+                t_near = t;
+                hitObject = object;
+                hit = true;
+            }
+        }
+    }
     return (hitObject != nullptr);
 }
 
@@ -64,6 +80,14 @@ Vec3d castRay(const Ray &ray, const std::vector<std::shared_ptr<SceneObject>> &o
     // END TODO
     ///////////
 
+    double t_near = 0.0;
+    std::shared_ptr<SceneObject> hitObject = nullptr;
+
+    if (trace(ray, objects, t_near, hitObject))
+    {
+        Vec3d p_hit = ray.origin + t_near * ray.dir;
+        hitColor = hitObject->getSurfaceColor(p_hit);
+    }
     return hitColor;
 }
 
@@ -100,6 +124,28 @@ void render(const Vec3i viewport, const std::vector<std::shared_ptr<SceneObject>
     // cf., lecture slides raytracing 30ff
     // END TODO
     ///////////
+
+    int width = viewport[0];
+    int heigth = viewport[1];
+
+    for (int y = 0; y < heigth; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            double u = l + (r - l) * (x + 0.5) / width;
+            double v = t - (t - b) * (y + 0.5) / heigth;
+
+            Vec3d direction(u, v, -d);
+            direction.normalize();
+
+            Ray ray;
+            ray.origin = cameraPos;
+            ray.dir = direction;
+
+            framebuffer[y * width + x] = castRay(ray, objects);
+        }
+    }
+
 
     // Save the framebuffer an a PPM image
     saveAsPPM("./result.ppm", viewport, framebuffer);
