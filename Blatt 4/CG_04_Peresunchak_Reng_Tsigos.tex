@@ -73,6 +73,42 @@ Wintersemester 2025/26\\
 Nico Reng 3731402\\
 Viorel Tsigos 3720183}
 \begin{document}
-\section*{TODOs}
-
+\section*{Aufgabe 1:}
+\begin{enumerate}
+  \item \textbf{\underline{Diffuse Reflexion:}} \\ Diese Komponente simuliert raue, matte Oberflächen. Sie kontrolliert die Stärke und Streuung der spekularen Reflexion. Das Licht dringt leicht in die Oberfläche ein und wird in alle Richtungen gleichmäßig gestreut. Die Helligkeit ist daher unabhängig von der Blickrichtung, hängt aber vom Winkel des Lichteinfalls zur Oberflächennormalen ab. \\\\
+  \textbf{\underline{Spekulare Reflexion:}} \\Diese Komponente simuliert glänzende Oberflächen. Sie kontrolliert das ambienten Licht bei Selbstverdeckung. Das Licht wird vornehmlich in die Reflexionsrichtung gespiegelt. Man sieht ein Glanzlicht/Highlight, wenn der Blickvektor nahe am Reflexionsvektor liegt.\\\\
+  \textbf{\underline{Shininess (Glanzfaktor):}} \\Eine Erhöhung des Shininess-Exponenten bewirkt, dass das spekulare Highlight kleiner und schärfer wird. Niedrige Shininess-Werte erzeugen große, verwaschene Glanzlichter, hohe Werte erzeugen kleine, punktförmige Glanzlichter.
+  \item \textbf{\underline{Bedeutung:}} \\Die ambiente Komponente ist ein konstanter Grundhelligkeitswert, der auf jedes Objekt addiert wird. Sie dient als stark vereinfachte Annäherung an indirektes Licht also Streulicht. Man hat diese Komponente eingefügt, dass man damit Bereiche, die nicht direkt von einer Lichtquelle getroffen werden, nicht komplett schwarz darstellt. In der realen Welt gibt es kein konstantes Umgebungslicht. Was wir als Umgebungslicht wahrnehmen, ist normales Licht, das mehrmals von anderen Oberflächen reflektiert wurde. Dies Komponente ist sozusagen da, um komplexe Berechnungen zu vermeiden und trotzdem ein besseres Bild zu bekommen.
+  \item \textbf{\underline{Ambient:}}\\ Nein, die Berechnung ist eine Konstante ($k_a \cdot I_L$) und völlig unabhängig von Geometrie oder Blickwinkel. \\\\
+\textbf{\underline{Diffus:}}\\ Nein, die diffuse Reflexion hängt nur vom Winkel zwischen dem Lichtvektor $L$ und der Oberflächennormalen $N$ ab ($N \cdot L$). Der Betrachter sieht nämlich die Oberfläche aus jeder Richtung gleich hell. \\\\
+\textbf{\underline{Spekular:}}\\ Ja, das Glanzlicht ist nur sichtbar, wenn der Betrachter (Vektor $V$) in den Reflexionskegel des Lichts blickt. Die Formel enthält das Skalarprodukt aus Reflexionsvektor $R$ und Blickvektor $V$ ($(R \cdot V)^n$), wobei der Exponent $n$ bestimmt, wie stark etwas poliert ist. Bewegt sich der Betrachter, wandert das Glanzlicht mit
+  \item Hier können wir Snellius-Descartes-Gesetz anwenden:
+\begin{equation}
+n_1 \cdot \sin(\theta_1) = n_2 \cdot \sin(\theta_2)
+\end{equation}
+Folgende Werte sind aus der Aufgabenstellung gegeben:
+\begin{align*}
+&\text{Einfallswinkel } \theta_1 = 30^{\circ}\\
+&\text{Brechungsindex Luft } n_1 \approx 1.0\\
+&\text{Brechungsindex Wasser } (20^{\circ}~C)~n_2 \approx 1.33
+\end{align*}
+Somit können wir jetzt den Winkel des gebrochenen Strahls $\theta_2$ berechnen:
+\begin{align*}
+1.0 \cdot \sin(30^{\circ}) &= 1.33 \cdot \sin(\theta_2) \\
+1.0 \cdot 0.5 &= 1.33 \cdot \sin(\theta_2) \\
+0.5 &= 1.33 \cdot \sin(\theta_2) \\
+\sin(\theta_2) &= \frac{0.5}{1.33} \\
+\sin(\theta_2) &\approx 0.3759 \\
+\theta_2 &= \arcsin(0.3759) \\
+\theta_2 &\approx 22.08^{\circ}
+\end{align*}
+Somit ist der Winkel vom Strahl ${22.1^{\circ}}$ 
+\end{enumerate}
+\section*{Aufgabe 2:}
+\begin{enumerate}
+  \item Siehe Code
+  \item Siehe Code
+  \item Siehe Code
+  \item Siehe Code
+\end{enumerate}
 \end{document}
