@@ -17,10 +17,6 @@ const static int WIDTH = 600;
 const static int HEIGHT = 600;
 const static int MAX_DEPTH = 5;
 
-//////////
-// TODO 2:
-// Compute Phong lighting
-//
 Vec3d computePhongLighting(
     Vec3d const& view_direction,            //< direction from surface point to camera origin
     Vec3d const& surface_normal,            //< normal vector at surface point
@@ -41,7 +37,7 @@ Vec3d computePhongLighting(
 
     double NdotL = std::max(surface_normal.dot(light_direction), 0.0);
     Vec3d diffuse = k_d * (light_intensity * NdotL);
-    
+
     Vec3d R = light_direction.reflect(surface_normal).normalize();
     double RdotV = std::max(R.dot(view_direction), 0.0);
     Vec3d specular = k_s * light_color * (light_intensity * pow(RdotV, m));
