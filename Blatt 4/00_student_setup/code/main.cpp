@@ -17,10 +17,6 @@ const static int WIDTH = 600;
 const static int HEIGHT = 600;
 const static int MAX_DEPTH = 5;
 
-//////////
-// TODO 2:
-// Compute Phong lighting
-//
 Vec3d computePhongLighting(
     Vec3d const& view_direction,            //< direction from surface point to camera origin
     Vec3d const& surface_normal,            //< normal vector at surface point
@@ -32,8 +28,21 @@ Vec3d computePhongLighting(
     //////////
     // TODO 2:
     // Compute phong lighting.
+    Vec3d k_a = std::get<0>(phong_coeff);
+    Vec3d k_d = std::get<1>(phong_coeff);
+    Vec3d k_s = std::get<2>(phong_coeff);
+    double m = std::get<3>(phong_coeff);
 
-    return Vec3d(); // replace
+    Vec3d ambient = k_a * light_intensity;
+
+    double NdotL = std::max(surface_normal.dot(light_direction), 0.0);
+    Vec3d diffuse = k_d * (light_intensity * NdotL);
+
+    Vec3d R = light_direction.reflect(surface_normal).normalize();
+    double RdotV = std::max(R.dot(view_direction), 0.0);
+    Vec3d specular = k_s * light_color * (light_intensity * pow(RdotV, m));
+
+    return ambient + diffuse + specular;
     // END TODO 2
     /////////////
 }
@@ -114,7 +123,33 @@ Vec3d castRay(const Ray& ray, const std::vector<std::shared_ptr<SceneObject>>& o
         //
         //      For a more realistic image, use inverse square attentuation for the light intensity.
         //
+        for (auto light : lights) {
+            Vec3d light_dir = light.getPosition() - p_hit;
+            double distance_to_light = light_dir.length();
+            Vec3d light_dir_norm = light_dir.normalize();
+            PhongCoefficients pc = hitObject.get()->getPhongCoefficients(p_hit);
 
+            Ray shadow_ray = Ray();
+            shadow_ray.origin = p_hit + light_dir_norm * 1e-4;
+            shadow_ray.dir = light_dir_norm;
+
+            double t_near = std::numeric_limits<double>::max();
+            std::shared_ptr<SceneObject> shadow_hitObject;
+
+            bool shadow = trace(shadow_ray, objects, t_near, shadow_hitObject) && (t_near < distance_to_light);
+            double light_intensity = light.getIntensity() / pow(distance_to_light, 2);
+
+            if (!shadow) {
+                Vec3d surface_normal = hitObject.get()->getSurfaceNormal(p_hit);
+
+                Vec3d view_dir = (ray.origin - p_hit).normalize();
+
+                hitColor += computePhongLighting(view_dir, surface_normal, light_dir_norm, pc, light.getColor(), light_intensity);
+            }
+            else {
+                hitColor += std::get<0>(pc) * light_intensity; // ambient
+            }
+        }
         // END TODO 3
         /////////////
 
@@ -125,11 +160,17 @@ Vec3d castRay(const Ray& ray, const std::vector<std::shared_ptr<SceneObject>>& o
         // Build a reflection for the hitpoint of the hit object. 
         // Use this ray to make a recursive call to "castRay" and add the result of the call to "hitColor".
         //
-
+        Vec3d view_dir = (ray.origin - p_hit).normalize(); // Points away from surface
+        Vec3d normal = hitObject.get()->getSurfaceNormal(p_hit).normalize();
+        Vec3d r = view_dir.reflect(normal);
+        Ray reflexion_ray = Ray();
+        reflexion_ray.origin = p_hit + r * 1e-4;
+        reflexion_ray.dir = r;
+        reflexion_ray.depth = ray.depth + 1;
+        hitColor += castRay(reflexion_ray, objects, lights);
         // END TODO 4
         /////////////
     }
-
     return hitColor;
 }
 
@@ -157,6 +198,7 @@ void render(const Vec3i viewport, const std::vector<std::shared_ptr<SceneObject>
     // Cast a ray from 'cameraPos' through the center(!) of each pixel on the viewplane.
     // Use the view plane parametrization given above (l,r,b,t,d).
     #pragma omp parallel for
+
     for (int j = 0; j < viewport[1]; ++j)
     {
         for (int i = 0; i < viewport[0]; ++i)
