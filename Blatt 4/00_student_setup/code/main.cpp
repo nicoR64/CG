@@ -197,7 +197,8 @@ void render(const Vec3i viewport, const std::vector<std::shared_ptr<SceneObject>
 
     // Cast a ray from 'cameraPos' through the center(!) of each pixel on the viewplane.
     // Use the view plane parametrization given above (l,r,b,t,d).
-#pragma omp parallel for
+    #pragma omp parallel for
+
     for (int j = 0; j < viewport[1]; ++j)
     {
         for (int i = 0; i < viewport[0]; ++i)
