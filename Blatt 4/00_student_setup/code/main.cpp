@@ -22,10 +22,10 @@ const static int MAX_DEPTH = 5;
 // Compute Phong lighting
 //
 Vec3d computePhongLighting(
-    Vec3d const& view_direction,            //< direction from surface point to camera origin
-    Vec3d const& surface_normal,            //< normal vector at surface point
-    Vec3d const& light_direction,           //< direction from surface point to light source
-    PhongCoefficients const& phong_coeff,   //< phong coefficient k_a,k_d,k_s and n
+    Vec3d const& view_direction,            //< direction from surface point to camera origin   // V
+    Vec3d const& surface_normal,            //< normal vector at surface point                  // N
+    Vec3d const& light_direction,           //< direction from surface point to light source    // L
+    PhongCoefficients const& phong_coeff,   //< phong coefficient k_a,k_d,k_s and n             // k_a, k_d, k_s shininess
     Vec3d const& light_color,               //< color of the light source
     double light_intensity)                 //< intensity of the light source
 {
@@ -33,7 +33,30 @@ Vec3d computePhongLighting(
     // TODO 2:
     // Compute phong lighting.
 
-    return Vec3d(); // replace
+    //1. Koeffizienten aus dem Tupel entpacken
+    //k_a ambient ist egal, weil globel in castRay hinzugefügt wird
+    Vec3d k_a = std::get<0>(phong_coeff);
+    Vec3d k_d = std::get<1>(phong_coeff);
+    Vec3d k_s = std::get<2>(phong_coeff);
+    double shininess = std::get<3>(phong_coeff);
+    
+    //2. Diffuser Anteil: k_d * (N \cdot L) * I
+    //max(0,....), da Licht nicht von hinten kommt lmao
+    double N_dot_l = std::max(0.0, surface_normal.dot(light_direction));
+    Vec3d diffuse = k_d * N_dot_l * light_intensity; 
+
+    //3. Spekularer Anteil: k_s * (R \cdot V)^n * I * LightColor
+    //Brauchen Reflektionsvektor R vom Licht
+    //L zeigt nur zur Lichtquelle, für Refelxion brauchen wir einfallenden Vektor also -L
+    Vec3d reflection = (-light_direction).reflect(surface_normal).normalize();
+    double R_dot_V = std::max(0.0, reflection.dot(view_direction));
+    double spec_factor = std::pow(R_dot_V, shininess);
+
+    //Laut Aufgabenstellung die Lichtfarbe nur beim spekularen Anteil nutzen
+    Vec3d specular = k_s * spec_factor * light_intensity * light_color;
+    Vec3d ambient = k_a * light_intensity;
+
+    return ambient + diffuse + specular;
     // END TODO 2
     /////////////
 }
@@ -87,7 +110,7 @@ Vec3d castRay(const Ray& ray, const std::vector<std::shared_ptr<SceneObject>>& o
         return hitColor;
 
     // pointer to the object that was hit by the ray
-    std::shared_ptr<SceneObject> hitObject = nullptr;
+    std::shared_ptr<SceneObject> hitObject;
 
     // intersection distance from the ray origin to the point hit
     double t = std::numeric_limits<double>::max();
@@ -107,11 +130,58 @@ Vec3d castRay(const Ray& ray, const std::vector<std::shared_ptr<SceneObject>>& o
         //
         // For each light source (given by funtion parameter lights)
         //
-        //   a) Cast a shadow ray from the hitpoint to the light-source (use the trace function)
-        //
+        PhongCoefficients phong_coeff = hitObject->getPhongCoefficients(p_hit);
+        Vec3d k_a = std::get<0>(phong_coeff);
+        Vec3d normal = hitObject->getSurfaceNormal(p_hit).normalize();
+        Vec3d viewDirection = (ray.origin - p_hit).normalize();  //zeigt zur Kamera
+    
+       
+        for (const auto& light : lights)
+        {
+            Vec3d lightVector = light.getPosition() - p_hit;
+            double distanceSquared = lightVector.norm(); // das ist |L|^2 also Länge zum Quadrat
+            double distance = std::sqrt(distanceSquared);
+            Vec3d lightDirection = lightVector.normalize(); //Licht-Richtung normalisiert
+            
+            //   a) Cast a shadow ray from the hitpoint to the light-source (use the trace function)
+            //
+            Ray shadowRay;
+            shadowRay.origin = p_hit + normal * 1e-4; //kleines Offset um Selbstbeschattung zu vermeiden
+            shadowRay.dir = lightDirection;
+            
+            double t_shadow; 
+            std::shared_ptr<SceneObject> shadowHitObject;
+            bool inShadow = false;
+
+            if (trace(shadowRay, objects, t_shadow, shadowHitObject))
+            {
+                //Wenn der Schattenstrahl ein Objekt trifft, müssen wir prüfen ob das Objekt
+                //zwischen dem Hitpunkt und der Lichtquelle liegt
+                if (t_shadow < distance)
+                {
+                    inShadow = true;
+                }
+        }
         //   b) If not in shadow, compute local lighting using the function "computePhongLighting"
         //      Else apply ambient term only
-        //
+        double attenuatedIntensity = light.getIntensity() / distanceSquared; 
+        if(!inShadow)
+        {
+            //Inverse Square Attenuation: I / distance^2
+
+            hitColor += computePhongLighting(
+                viewDirection,
+                normal,
+                lightDirection,
+                phong_coeff,
+                light.getColor(),
+                attenuatedIntensity
+            );
+        } else {
+                hitColor += attenuatedIntensity * k_a;  //Vorfaktor 0.1 ggf hinzugefügt 
+
+        }
+    }
         //      For a more realistic image, use inverse square attentuation for the light intensity.
         //
 
@@ -125,7 +195,26 @@ Vec3d castRay(const Ray& ray, const std::vector<std::shared_ptr<SceneObject>>& o
         // Build a reflection for the hitpoint of the hit object. 
         // Use this ray to make a recursive call to "castRay" and add the result of the call to "hitColor".
         //
+        Vec3d k_s = std::get<2>(phong_coeff);
 
+        //Rechne nur weiter, wenn k_s größer ist und Max-Depth noch nicht erreicht ist
+        //Max-Depth Check ist ganz oben in der Fkt, aber müssen Tiefe erhöhen sonst Englosschleife wie in Aufgabenstellung gesagt
+
+        if (ray.depth < MAX_DEPTH)
+        {
+            Vec3d reflectionDirection = ray.dir.reflect(normal).normalize();
+            
+            Ray reflectRay; 
+            reflectRay.origin = p_hit + normal * 1e-4; //kleines Offset um Selbstbeschattung zu vermeiden
+            reflectRay.dir = reflectionDirection;
+            reflectRay.depth = ray.depth + 1;
+
+            //Rekursiver Aufruf Farbe
+            Vec3d reflectedColor = castRay(reflectRay, objects, lights);
+            
+            //Zum Ergebnis addieren, gewichtet mit dem k_s
+            hitColor += k_s * reflectedColor;
+        }
         // END TODO 4
         /////////////
     }
