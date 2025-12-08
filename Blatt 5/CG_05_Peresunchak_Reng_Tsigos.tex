@@ -76,172 +76,285 @@ Viorel Tsigos 3720183}
 \section*{Aufgabe 1:}
 \begin{enumerate}
   \item Hier haben wir für die Translationsmatrix $t_x$ = 3 und $t_y$ = 5. Für die Skalierungsmatrix haben wir hier $S_1$ = 3 für die Horizontale und $S_2$ = 1 für die Vertikale. Somit ergibt sich folgende Translationsmatrix $T$ sowie Skalierungsmatrix $S$:
-  \begin{align*}
-    T(3, 5) = \begin{pmatrix*}
-      1~~0~~3 \\
-      0~~1~~5 \\
-      0~~0~~1 
-    \end{pmatrix*} \\
-    S(3, 1) = \begin{pmatrix*}
-      3~~0~~ 0 \\
-      0~~1~~ 0 \\
-      0~~0~~ 1
-    \end{pmatrix*}
-  \end{align*}
-  Diese Matrizen müssen wir noch miteinander multiplizieren. 
-  \begin{align*}
-    T(3, 5) \cdot S(3, 1) = \begin{pmatrix*}
-      1~~0~~3 \\
-      0~~1~~5 \\
-      0~~0~~1
-    \end{pmatrix*} \cdot \begin{pmatrix*}
-      3~~0~~ 0 \\
-      0~~1~~ 0 \\
-      0~~0~~ 1
-    \end{pmatrix*} = \begin{pmatrix*}
-      3~~0~~3 \\
-      0~~1~~5 \\
-      0~~0~~1
-    \end{pmatrix*}
-  \end{align*}
+        \begin{align*}
+          T(3, 5) = \begin{pmatrix*}
+                      1~~0~~3 \\
+                      0~~1~~5 \\
+                      0~~0~~1
+                    \end{pmatrix*} \\
+          S(3, 1) = \begin{pmatrix*}
+                      3~~0~~ 0 \\
+                      0~~1~~ 0 \\
+                      0~~0~~ 1
+                    \end{pmatrix*}
+        \end{align*}
+        Diese Matrizen müssen wir noch miteinander multiplizieren.
+        \begin{align*}
+          T(3, 5) \cdot S(3, 1) = \begin{pmatrix*}
+                                    1~~0~~3 \\
+                                    0~~1~~5 \\
+                                    0~~0~~1
+                                  \end{pmatrix*} \cdot \begin{pmatrix*}
+                                                         3~~0~~ 0 \\
+                                                         0~~1~~ 0 \\
+                                                         0~~0~~ 1
+                                                       \end{pmatrix*} = \begin{pmatrix*}
+                                                                          3~~0~~3 \\
+                                                                          0~~1~~5 \\
+                                                                          0~~0~~1
+                                                                        \end{pmatrix*}
+        \end{align*}
   \item Wichtig ist hier die Reihenfolge der Matrixmultiplikation. Hier müssen wir zuerst die Rotation und dann die Translation durchführen.
-  \begin{align*}
-    cos(-60^\circ) = \frac{1}{2} = 0,5 \\
-    sin(-60^\circ) = -\frac{\sqrt{3}}{2}
-  \end{align*}
-  Dadurch ergibt sich folgende Rotationsmatrix:
-  \begin{align*}
-    R(-60^\circ) = \begin{pmatrix*}
-      0,5 & \frac{\sqrt{3}}{2} & 0 \\
-      -\frac{\sqrt{3}}{2} & 0,5 & 0 \\
-      0 & 0 & 1
-    \end{pmatrix*}
-  \end{align*}
-    Zudem haben wir wieder eine Translationsmatrix mit $t_x$ = 3 und $t_y$ = 3. Somit ergibt sich folgende Translationsmatrix:
-    \begin{align*}
-      T(3, 3) = \begin{pmatrix*}
-        1 & 0 & 3 \\
-        0 & 1 & 3 \\
-        0 & 0 & 1
-      \end{pmatrix*}
-    \end{align*}
-    Hier müssen wir wieder die beiden Matrizen multiplizieren: 
-    \begin{align*}
-      T(3, 3) \cdot R(-60^\circ) = \begin{pmatrix*}
-        1 & 0 & 3 \\
-        0 & 1 & 3 \\
-        0 & 0 & 1
-      \end{pmatrix*} \cdot 
-       \begin{pmatrix*}
-        0,5 & \frac{\sqrt{3}}{2} & 0 \\
-        -\frac{\sqrt{3}}{2} & 0,5 & 0 \\
-        0 & 0 & 1
-    \end{pmatrix*} = 
-    \begin{pmatrix*}
-      0,5 & \frac{\sqrt{3}}{2} & 3 \\
-      -\frac{\sqrt{3}}{2} & 0,5 & 3 \\
-      0 & 0 & 1
-    \end{pmatrix*}
-    \end{align*}
-    \item Hier müssen wir zuerst den Scherungsparameter berechnen: 
-    \begin{align*}
-      \alpha = \tan(45^\circ) = 1
-    \end{align*}
-    Wenn wir jetzt den Scherungsparameter in die Matrix einfügen erhalten wir folgene Scherungsmatrix:
-    \begin{align*}
-      S(1) = \begin{pmatrix*}
-        1 & 1 & 0 \\
-        0 & 1 & 0 \\
-        0 & 0 & 1
-      \end{pmatrix*}
-    \end{align*}
-    \item Wichtig ist hier zu beachten dass wir die Geometrische Form an den Ursprung verschieben, dann die Rotation durchführen und dann die Geometrische Form wieder zurück verschieben müssen.\\ \\
-    Wir müssen hier jetzt also drei Matrizen aufstellen. Zuerst die Translationsmatrix um die Geometrische Form an den Ursprung zu verschieben mit $t_x$ = -7 und $t_y$ = -7 also $T(-7, -7)$. Danach die Rotationsmatrix für die Rotation um 120 Grad $R(-120^\circ)$, wobei hier $cos(-120^\circ) = -\frac{1}{2} = -0,5$ sowie $sin(-120^\circ) = \frac{\sqrt{3}}{2}$ gelten. Zum Schluss die Translationsmatrix um die Geometrische Form wieder zurück zu verschieben $T(7, 7)$.\\
-  \begin{align*}
-    T(-7, -7) = \begin{pmatrix*}
-      1 & 0 & -7 \\
-      0 & 1 & -7 \\
-      0 & 0 & 1
-    \end{pmatrix*} \\ \\
-    R(-120^\circ) = 
-    \begin{pmatrix*}
-      -0,5 & \frac{\sqrt{3}}{2} & 0 \\
-      -\frac{\sqrt{3}}{2} & -0,5 & 0 \\
-      0 & 0 & 1
-    \end{pmatrix*} \\ \\
-    T(7, 7) = \begin{pmatrix*}
-      1 & 0 & 7 \\
-      0 & 1 & 7 \\
-      0 & 0 & 1
-    \end{pmatrix*}
-  \end{align*}
-  Hier müssen wir jetzt auf die Reihenfolge der Matrixmultiplikation achten. Wir wollen zuerst an den Ursprung verschieben, dann rotieren und dann wieder zurück verschieben. Somit ergibt sich die Reihenfolge $T(7, 7) \cdot R(-120^\circ) \cdot T(-7, -7)$:
-  \begin{align*}
-    \begin{pmatrix*}
-      1 & 0 & 7 \\
-      0 & 1 & 7 \\
-      0 & 0 & 1
-    \end{pmatrix*} \cdot 
-    \begin{pmatrix*}
-      -0,5 & \frac{\sqrt{3}}{2} & 0 \\
-      -\frac{\sqrt{3}}{2} & -0,5 & 0 \\
-      0 & 0 & 1
-    \end{pmatrix*} \cdot 
-    \begin{pmatrix*}
-      1 & 0 & -7 \\
-      0 & 1 & -7 \\
-      0 & 0 & 1
-    \end{pmatrix*} = 
-    \begin{pmatrix*}
-      -0,5 & \frac{\sqrt{3}}{2} &  \frac{-7 \cdot \sqrt{3} + 21}{2} \\
-      -\frac{\sqrt{3}}{2} & -0,5 & \frac{7 \cdot \sqrt{3} + 21}{2} \\
-      0 & 0 & 1
-    \end{pmatrix*}
-  \end{align*}
-  \end{enumerate}
-  \section*{Aufgabe 2:}
-  \begin{enumerate}
-    \item Wir wissen dass die Transformationsmatrix folgende Form hat: 
-    \begin{align*}
-      B\_A = \begin{pmatrix*}
-        b_1 & b_2 & b_3 & \text{Ursprung} \\
-        0 & 0 & 0 & 1 \\
-    \end{pmatrix*} = \begin{pmatrix*}
-      2 & 3 & 1 & 1 \\
-      5 & 2 & -3 & 2 \\
-      1 & 1 & 1 & 3 \\
-      0 & 0 & 0 & 1
-    \end{pmatrix*}
-    \end{align*}
-    \item Hier müssen wir einfach $P_A = B\_A \cdot P_B$ rechnen, wobei $P_A$ der Punkt $P_B$ in Koordinaten von $A$ ist. Somit ergibt sich:
-    \begin{align*}
-      P_A = \begin{pmatrix*}
-        2 & 3 & 1 & 1 \\
-        5 & 2 & -3 & 2 \\
-        1 & 1 & 1 & 3 \\
-        0 & 0 & 0 & 1
-      \end{pmatrix*} \cdot \begin{pmatrix*}
-        1 \\
-        1 \\
-        1 \\
-        1
-      \end{pmatrix*} = \begin{pmatrix*}
-        7 \\
-        6 \\
-        6 \\
-        1
-      \end{pmatrix*}
-    \end{align*} \\
-    Dadurch dass wir uns aber in nur 3 Dimensionen befinden ist der Punkt $P_A = \begin{pmatrix*}
-        7 \\
-        6 \\
-        6
-      \end{pmatrix*}$
-  \end{enumerate}
-  \section*{Aufgabe 3:}
-  \begin{enumerate}
-    \item 1
-    \item 2
-    \item 3
-  \end{enumerate}
+        \begin{align*}
+          cos(-60^\circ) = \frac{1}{2} = 0,5 \\
+          sin(-60^\circ) = -\frac{\sqrt{3}}{2}
+        \end{align*}
+        Dadurch ergibt sich folgende Rotationsmatrix:
+        \begin{align*}
+          R(-60^\circ) = \begin{pmatrix*}
+                           0,5 & \frac{\sqrt{3}}{2} & 0 \\
+                           -\frac{\sqrt{3}}{2} & 0,5 & 0 \\
+                           0 & 0 & 1
+                         \end{pmatrix*} \approx \begin{pmatrix*}
+                                                  0,5 & 0,866 & 0 \\
+                                                  -0,866 & 0,5 & 0 \\
+                                                  0 & 0 & 1
+                                                \end{pmatrix*}
+        \end{align*}
+        Zudem haben wir wieder eine Translationsmatrix mit $t_x$ = 3 und $t_y$ = 3. Somit ergibt sich folgende Translationsmatrix:
+        \begin{align*}
+          T(3, 3) = \begin{pmatrix*}
+                      1 & 0 & 3 \\
+                      0 & 1 & 3 \\
+                      0 & 0 & 1
+                    \end{pmatrix*}
+        \end{align*}
+        Hier müssen wir wieder die beiden Matrizen multiplizieren:
+        \begin{align*}
+          T(3, 3) \cdot R(-60^\circ) = \begin{pmatrix*}
+                                         1 & 0 & 3 \\
+                                         0 & 1 & 3 \\
+                                         0 & 0 & 1
+                                       \end{pmatrix*} \cdot \begin{pmatrix*}
+                                                              0,5 & \frac{\sqrt{3}}{2} & 0 \\
+                                                              -\frac{\sqrt{3}}{2} & 0,5 & 0 \\
+                                                              0 & 0 & 1
+                                                            \end{pmatrix*} & = \begin{pmatrix*}
+                                                                                 0,5 & \frac{\sqrt{3}}{2} & 3 \\
+                                                                                 -\frac{\sqrt{3}}{2} & 0,5 & 3 \\
+                                                                                 0 & 0 & 1
+                                                                               \end{pmatrix*} \\
+                                                        & \approx \begin{pmatrix*}
+                                                                    0,5 & 0,866 & 3 \\
+                                                                    -0,866 & 0,5 & 3 \\
+                                                                    0 & 0 & 1
+                                                                  \end{pmatrix*}
+        \end{align*}
+  \item Hier müssen wir zuerst den Scherungsparameter berechnen:
+        \begin{align*}
+          \alpha = \tan(45^\circ) = 1
+        \end{align*}
+        Wenn wir jetzt den Scherungsparameter in die Matrix einfügen erhalten wir folgene Scherungsmatrix:
+        \begin{align*}
+          S(1) = \begin{pmatrix*}
+                   1 & 1 & 0 \\
+                   0 & 1 & 0 \\
+                   0 & 0 & 1
+                 \end{pmatrix*}
+        \end{align*}
+  \item Wichtig ist hier zu beachten dass wir die Geometrische Form an den Ursprung verschieben, dann die Rotation durchführen und dann die Geometrische Form wieder zurück verschieben müssen.\\ \\
+        Wir müssen hier jetzt also drei Matrizen aufstellen. Zuerst die Translationsmatrix um die Geometrische Form an den Ursprung zu verschieben mit $t_x$ = -7 und $t_y$ = -7 also $T(-7, -7)$. Danach die Rotationsmatrix für die Rotation um 120 Grad $R(-120^\circ)$, wobei hier $cos(-120^\circ) = -\frac{1}{2} = -0,5$ sowie $sin(-120^\circ) = \frac{\sqrt{3}}{2}$ gelten. Zum Schluss die Translationsmatrix um die Geometrische Form wieder zurück zu verschieben $T(7, 7)$.\\
+        \begin{align*}
+          T(-7, -7) = \begin{pmatrix*}
+                        1 & 0 & -7 \\
+                        0 & 1 & -7 \\
+                        0 & 0 & 1
+                      \end{pmatrix*}                  \\ \\
+          R(-120^\circ) =
+          \begin{pmatrix*}
+            -0,5 & \frac{\sqrt{3}}{2} & 0 \\
+            -\frac{\sqrt{3}}{2} & -0,5 & 0 \\
+            0 & 0 & 1
+          \end{pmatrix*} \\ \\
+          T(7, 7) = \begin{pmatrix*}
+                      1 & 0 & 7 \\
+                      0 & 1 & 7 \\
+                      0 & 0 & 1
+                    \end{pmatrix*}
+        \end{align*}
+        Hier müssen wir jetzt auf die Reihenfolge der Matrixmultiplikation achten. Wir wollen zuerst an den Ursprung verschieben, dann rotieren und dann wieder zurück verschieben. Somit ergibt sich die Reihenfolge $T(7, 7) \cdot R(-120^\circ) \cdot T(-7, -7)$:
+        \begin{align*}
+          \begin{pmatrix*}
+            1 & 0 & 7 \\
+            0 & 1 & 7 \\
+            0 & 0 & 1
+          \end{pmatrix*} \cdot \begin{pmatrix*}
+                                 -0,5 & \frac{\sqrt{3}}{2} & 0 \\
+                                 -\frac{\sqrt{3}}{2} & -0,5 & 0 \\
+                                 0 & 0 & 1
+                               \end{pmatrix*} \cdot \begin{pmatrix*}
+                                                      1 & 0 & -7 \\
+                                                      0 & 1 & -7 \\
+                                                      0 & 0 & 1
+                                                    \end{pmatrix*} & = \begin{pmatrix*}
+                                                                         -0,5 & \frac{\sqrt{3}}{2} &  \frac{-7 \cdot \sqrt{3} + 21}{2} \\
+                                                                         -\frac{\sqrt{3}}{2} & -0,5 & \frac{7 \cdot \sqrt{3} + 21}{2} \\
+                                                                         0 & 0 & 1
+                                                                       \end{pmatrix*} \\
+                                                          & \approx \begin{pmatrix*}
+                                                                      -0,5 & 0,866 & 4,438 \\
+                                                                      -0,866 & -0,5 & 16,562 \\
+                                                                      0 & 0 & 1
+                                                                    \end{pmatrix*}
+        \end{align*}
+\end{enumerate}
+\section*{Aufgabe 2:}
+\begin{enumerate}
+  \item Wir wissen dass die Transformationsmatrix folgende Form hat:
+        \begin{align*}
+          B\_A = \begin{pmatrix*}
+                   b_1 & b_2 & b_3 & \text{Ursprung} \\
+                   0 & 0 & 0 & 1 \\
+                 \end{pmatrix*} = \begin{pmatrix*}
+                                    2 & 3 & 1 & 1 \\
+                                    5 & 2 & -3 & 2 \\
+                                    1 & 1 & 1 & 3 \\
+                                    0 & 0 & 0 & 1
+                                  \end{pmatrix*}
+        \end{align*}
+  \item Hier müssen wir einfach $P_A = B\_A \cdot P_B$ rechnen, wobei $P_A$ der Punkt $P_B$ in Koordinaten von $A$ ist. Somit ergibt sich:
+        \begin{align*}
+          P_A = \begin{pmatrix*}
+                  2 & 3 & 1 & 1 \\
+                  5 & 2 & -3 & 2 \\
+                  1 & 1 & 1 & 3 \\
+                  0 & 0 & 0 & 1
+                \end{pmatrix*} \cdot \begin{pmatrix*}
+                                       1 \\
+                                       1 \\
+                                       1 \\
+                                       1
+                                     \end{pmatrix*} = \begin{pmatrix*}
+                                                        7 \\
+                                                        6 \\
+                                                        6 \\
+                                                        1
+                                                      \end{pmatrix*}
+        \end{align*} \\
+        Dadurch dass wir uns aber in nur 3 Dimensionen befinden ist der Punkt $P_A = \begin{pmatrix*}
+            7 \\
+            6 \\
+            6
+          \end{pmatrix*}$
+\end{enumerate}
+\section*{Aufgabe 3:}
+\begin{enumerate}
+  \item
+        \[
+          \begin{pmatrix}
+            \cos(90\text{°}) & -\sin(90\text{°}) \\
+            \sin(90\text{°}) & \cos(90\text{°})
+          \end{pmatrix}
+          \cdot
+          \begin{pmatrix}
+            2 \\
+            1
+          \end{pmatrix}
+          =
+          \begin{pmatrix}
+            0 & -1 \\
+            1 & 0
+          \end{pmatrix}
+          \cdot
+          \begin{pmatrix}
+            2 \\
+            1
+          \end{pmatrix}
+          =
+          \begin{pmatrix}
+            0 \cdot 2 + (-1) \cdot 1 \\
+            1 \cdot 2 + 0 \cdot 1
+          \end{pmatrix}
+          =
+          \begin{pmatrix}
+            -1 \\
+            2
+          \end{pmatrix}
+        \]
+
+  \item
+        \[
+          \begin{pmatrix}
+            a & d & g \\
+            b & e & h \\
+            c & f & i
+          \end{pmatrix}
+          \cdot
+          \begin{pmatrix}
+            5 \\
+            0 \\
+            0
+          \end{pmatrix}
+          =
+          \begin{pmatrix}
+            5a \\
+            5b \\
+            5c
+          \end{pmatrix}
+        \]
+
+        Um zu erreichen, dass das Ergebnis $\begin{pmatrix} 0 \\ 5 \\ 0 \end{pmatrix}$ ist, muss gelten: $5a=0$, $5b=5$, und $5c=0$. Daraus folgt $a=0$, $b=1$, $c=0$. Die Matrix muss eine Drehung sein, die den Vektor $(5, 0, 0)^T$ (der auf der x-Achse liegt) auf den Vektor $(0, 5, 0)^T$ (der auf der y-Achse liegt) abbildet. Dies ist eine Rotation um die z-Achse um $90^\circ$.
+
+        Die Rotationsmatrix lautet:
+
+        \[
+          \begin{pmatrix}
+            \cos(90\text{°}) & -\sin(90\text{°}) & 0 \\
+            \sin(90\text{°}) & \cos(90\text{°})  & 0 \\
+            0                & 0                 & 1
+          \end{pmatrix}
+          =
+          \begin{pmatrix}
+            0 & -1 & 0 \\
+            1 & 0  & 0 \\
+            0 & 0  & 1
+          \end{pmatrix}
+        \]
+
+  \item Ja, solche Transformationen sind möglich. Die Transformation lautet Skalierung und hier wird in der Matrix auf der Hauptdiagonalen alle Werte zu 1 gesetzt, außer einem Wert, der den Skalierungsfaktor $\alpha$ bekommt.
+
+        Beispiel einer Skalierung in x-Richtung:
+        \[
+          \begin{pmatrix}
+            \alpha & 0 & 0 \\
+            0      & 1 & 0 \\
+            0      & 0 & 1
+          \end{pmatrix}
+        \]
+
+  \item
+        \begin{align*}
+          \mathbf{M}_{L} & = R(\omega) \cdot R(\varphi) \cdot R(\kappa) \\
+                         & =                                            %
+          \begin{pmatrix}
+            c_\varphi c_\kappa                               & -c_\varphi s_\kappa                              & s_\varphi           \\
+            s_\omega s_\varphi c_\kappa + c_\omega s_\kappa  & -s_\omega s_\varphi s_\kappa + c_\omega c_\kappa & -s_\omega c_\varphi \\
+            -c_\omega s_\varphi c_\kappa + s_\omega s_\kappa & c_\omega s_\varphi s_\kappa + s_\omega c_\kappa  & c_\omega c_\varphi
+          \end{pmatrix}%
+          \\
+          \mathbf{M}_{R} & = R(\kappa) \cdot R(\varphi) \cdot R(\omega) \\
+                         & =                                            %
+          \begin{pmatrix}
+            c_\kappa c_\varphi & -s_\kappa c_\omega - c_\kappa s_\varphi s_\omega & s_\kappa s_\omega - c_\kappa s_\varphi c_\omega  \\
+            s_\kappa c_\varphi & c_\kappa c_\omega - s_\kappa s_\varphi s_\omega  & -c_\kappa s_\omega - s_\kappa s_\varphi c_\omega \\
+            -s_\varphi         & c_\varphi s_\omega                               & c_\varphi c_\omega
+          \end{pmatrix}%
+          \\
+                         & \Rightarrow \mathbf{M}{L} \neq \mathbf{M}{R}
+        \end{align*}
+
+        Der Grund, warum die Reihenfolge von Rotationen in 3D zu unterschiedlichen Endpositionen führt und somit die Matrizenmultiplikation $R_1 \cdot R_2 \neq R_2 \cdot R_1$ ist, liegt in der Natur der Drehung selbst.
+
+        Bei der ersten Rotation wird nicht nur der zu drehende Vektor verschoben, sondern auch das gesamte Koordinatensystem, in dem die nachfolgende Rotation definiert ist, wird mitgedreht. Die zweite Rotation (z.B. um die ursprüngliche $y$-Achse) findet nun in einem bereits gedrehten Koordinatensystem statt.
+\end{enumerate}
 \end{document}
