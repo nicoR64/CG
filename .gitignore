@@ -122,3 +122,4 @@ nb-configuration.xml
 *.gz
 
 /Blatt 2/aufgaben_blatt_02/images
+*.ini
