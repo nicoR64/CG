@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Math1.h"
+#include "../Math.h"
 
 namespace cg
 {
