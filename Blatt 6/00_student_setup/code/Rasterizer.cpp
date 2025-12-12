@@ -157,8 +157,7 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
             // TODO
             // Transform the position of the point and the normal to world space.
             vec4 point_world = global_trafo * vec4(point.position, 1);
-            mat3 normalMatrix = glm::inverseTranspose(mat3(global_trafo));
-            vec3 normal_world = normalMatrix * point.normal;
+            vec3 normal_world = global_trafo * vec4(point.normal, 0);
 
 
             // Calculate lighting
