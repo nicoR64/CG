@@ -156,8 +156,8 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
             ///////
             // TODO
             // Transform the position of the point and the normal to world space.
-            vec4 point_world = zeroVec4();
-            vec3 normal_world = zeroVec3();
+            vec4 point_world = global_trafo * vec4(point.position, 1);
+            vec3 normal_world = global_trafo * vec4(point.normal, 0);
 
 
             // Calculate lighting
@@ -183,7 +183,17 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
                         // and add it to the color already calculated from previous light sources.
                         // All relevant information from the light source is stored in colorInfo.
                         // Hint: The direction of the ray is from the light source to the object.
-
+                        const float d = glm::length(colorInfo.ray);
+                        const float k_d = 1.0f / (0.001f + d * d);
+                        const vec3 N = glm::normalize(normal_world);
+                        const vec3 L = glm::normalize(-colorInfo.ray);
+                        const float lambert = std::max(glm::dot(N, L), 0.0f);
+                        const float lightFactor = colorInfo.intensity * k_d * lambert;
+                        vec4 lightColor = colorInfo.color;
+                        lightColor.r *= lightFactor;
+                        lightColor.g *= lightFactor;
+                        lightColor.b *= lightFactor;
+                        color += point.color * lightColor;
                         //...
                     }
                 }
@@ -194,7 +204,7 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
             // Transform to clip space
             auto point_clip = viewProjection * point_world;
 
-            point.validXY = point_clip.x > -point_clip.w && point_clip.x < point_clip.w&& point_clip.y > -point_clip.w && point_clip.y < point_clip.w;
+            point.validXY = point_clip.x > -point_clip.w && point_clip.x < point_clip.w && point_clip.y > -point_clip.w && point_clip.y < point_clip.w;
             point.validZ = point_clip.z > -point_clip.w && point_clip.z < point_clip.w;
 
             // Transform to screen space
@@ -295,11 +305,45 @@ void cg::Rasterizer::rasterizeFilled(const Triangle& triangle)
 
 void cg::Rasterizer::rasterizeLine(const cg::Triangle::Point& point_start, const cg::Triangle::Point& point_end)
 {
-    ///////
-    // TODO
-    // Implement Bresenham's line algorithm for rasterizing a single line.
+    int x0 = static_cast<int>(std::round(point_start.position.x));
+    int y0 = static_cast<int>(std::round(point_start.position.y));
+    int x1 = static_cast<int>(std::round(point_end.position.x));
+    int y1 = static_cast<int>(std::round(point_end.position.y));
 
-    //...
+    int dx = std::abs(x1 - x0);
+    int dy = std::abs(y1 - y0);
+    int sx = (x0 < x1) ? 1 : -1;
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx - dy;
+
+    float total_dist = static_cast<float>(std::max(dx, dy));
+    float current_step = 0.0f;
+
+    while (true)
+    {
+        float t = (total_dist > 0.0f) ? (current_step / total_dist) : 0.0f;
+        float z = (1.0f - t) * point_start.position.z + t * point_end.position.z;
+
+        cg::Color color = (1.0f - t) * point_start.color + t * point_end.color;
+
+        setPixel(Point3D(static_cast<float>(x0), static_cast<float>(y0), z), color);
+
+        if (x0 == x1 && y0 == y1) break;
+
+        int e2 = 2 * err;
+        if (e2 > -dy)
+        {
+            err -= dy;
+            x0 += sx;
+        }
+        if (e2 < dx)
+        {
+            err += dx;
+            y0 += sy;
+        }
+
+        current_step += 1.0f;
+    }
 }
 
 void cg::Rasterizer::setPixel(const Point3D& point, Color color)
