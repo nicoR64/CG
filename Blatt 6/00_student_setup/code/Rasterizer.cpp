@@ -157,6 +157,10 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
             // TODO
             // Transform the position of the point and the normal to world space.
             vec4 point_world = global_trafo * vec4(point.position, 1.0f);
+
+            // Normale ist Richtungsvektor, Erweitern auf 4D, w=0 da damit Translation verhindert wird. Verschieben ja nicht nach oben, 
+            // nur bei Rotation verschieben wir hoch, Danach schneiden mit xyz wieder ab (vec3) und normieren. 
+            // normieren damit genau Länge 1 wichtig für Licht später
             vec3 normal_world = glm::normalize(vec3(global_trafo * vec4(point.normal, 0.0f)));
 
 
@@ -186,34 +190,37 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
 
                         // Vektor von der Oberfläche zur Lichtquelle (L)
                         
-                        // 1. Position der Lichtquelle aus der Transformationsmatrix holen
-                        // Lichter erben von SceneObject, daher nutzen wir getTransformation()
-                        mat4 lightMat = light->getTransformation();
-                        vec3 lightPos = vec3(lightMat[3]); // Die 4. Spalte (Index 3) ist die Position
-                                        
-                        // 2. Vektor von der Oberfläche zur Lichtquelle (L)
-                        vec3 surfacePos = vec3(point_world);
-                        vec3 lightDir = lightPos - surfacePos;
-                                        
-                        // 3. Distanz d berechnen
-                        float d = glm::length(lightDir);
-                                        
-                        // 4. Normalisieren für Lambert (L dot N)
-                        vec3 L = glm::normalize(lightDir);
-                        vec3 N = glm::normalize(normal_world);
-                                        
-                        // 5. Lambert-Faktor (Cosinus-Gesetz): max(0, N * L)
-                        float NdotL = std::max(0.0f, glm::dot(N, L));
-                                        
-                        // 6. Abschwächungsfaktor k_d = (0.001 + d^2)^-1
-                        float kd = 1.0f / (0.001f + d * d);
-                                        
-                        // 7. Berechnung der diffusen Farbe
-                        // (Lichtfarbe * Intensität * Lambert * Abschwächung)
-                        vec3 diffuse = vec3(colorInfo.color) * colorInfo.intensity * NdotL * kd;
-                                        
-                        // 8. Zur bestehenden Farbe addieren (Alpha bleibt 0.0 beim Addieren)
-                        color += vec4(diffuse, 0.0f);
+                        //distanz, Vektor vom Licht zum Objekt. Länge ist dieses Vektors ist der Abstand dist
+                        const float dist = glm::length(colorInfo.ray);
+                        
+                        //Abschwächungsfaktor (Attenuation) berechnen, macht dass Licht schwächer wird, je weiter weg es ist.
+                        const float k_d = 1.0f / (0.001f + dist * dist);
+                        
+                        //Normale vorbereiten, normalisiert werden!, sonst falsche lichtberechnung, Bestimmt in welche Richtung Flähce schaut
+                        vec3 N = glm::normalize(vec3(normal_world));
+                        
+                        //Lichtvektor, von Obefläche zu Licht, umdrehen mit - weil colorInfo.ray vom Licht zum Objekt zeigt. auch normalisieren
+                        vec3 L = glm::normalize(vec3(-colorInfo.ray));
+
+                        //Lamber-Factor berechnen, Skalarprodukt zwischen normalen und lichtvektor 
+                        //Gibt 1.0 bei senkrechten Lichteinfall, 0.0 bei flachem winkel. 
+                        //std::max(..., 0.0f) vergubdert negative Werte, falls das Licht von hinten kommt
+                        float lambert_factor = std::max(glm::dot(N, L), 0.0f);
+
+                        // Gesamter Licht-faktor berechnen
+                        //kombinieren von grund-intensität von Lampe und Abschwächung durch distanz (k_d) und Einfallswinkel (lambert_factor) das ist Helligkeit an diesem Punkt
+                        float light_factor = colorInfo.intensity * k_d * lambert_factor;
+
+                        //Lichtfarbe kopieren, weil Starten mit Grundfarbe der lichtquelle
+                        vec4 lightColor = colorInfo.color;
+
+                        // Multiplikation mit nur farbkanälen außer alpha, weil aufgabenstellung, mit berechneten Helligkeit
+                        lightColor.r *= light_factor; 
+                        lightColor.g *= light_factor; 
+                        lightColor.b *= light_factor; 
+
+                        //Materialfarbe * Lichtfarbe simuliert Physik aka Reflexion. und addiere dann für Gesamtfarbe also Ergebnis wird zur Gesamtfarbe addiert, da licht additiv ist.
+                        color += lightColor * point.color;
                     }
                 }
             }
