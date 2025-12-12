@@ -185,10 +185,10 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
                         // Hint: The direction of the ray is from the light source to the object.
                         const float d = glm::length(colorInfo.ray);
                         const float k_d = 1.0f / (0.001f + d * d);
-                        vec3 N = glm::normalize(normal_world);
-                        vec3 L = glm::normalize(-colorInfo.ray);
-                        float lambert = std::max(glm::dot(N, L), 0.0f);
-                        float lightFactor = colorInfo.intensity * k_d * lambert;
+                        const vec3 N = glm::normalize(normal_world);
+                        const vec3 L = glm::normalize(-colorInfo.ray);
+                        const float lambert = std::max(glm::dot(N, L), 0.0f);
+                        const float lightFactor = colorInfo.intensity * k_d * lambert;
                         vec4 lightColor = colorInfo.color;
                         lightColor.r *= lightFactor;
                         lightColor.g *= lightFactor;
