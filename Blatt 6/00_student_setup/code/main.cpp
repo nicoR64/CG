@@ -129,7 +129,35 @@ cg::Scene createOwnScene()
     // TODO
     // Create your own scene.
     // This task is optional, but the best scenes will be presented in the tutorial.
+    
+    // Zentrale "Sonne" (Gelb, selbstleuchtend simuliert durch helle Farbe)
+    auto sun = std::make_shared<cg::Sphere>(0.8f, 30, 30, cg::Color(1.0f, 0.8f, 0.0f, 1.0f));
+    scene.addObject(sun);
 
+    // "Erde" (Blau)
+    auto earth = std::make_shared<cg::Sphere>(0.4f, 20, 20, cg::Color(0.0f, 0.0f, 1.0f, 1.0f));
+    earth->Translate(cg::vec3(2.0f, 0.0f, 0.0f)); 
+    scene.addObject(earth);
+
+    // "Mond" (Grau), relativ zur Erde
+    auto moon = std::make_shared<cg::Sphere>(0.15f, 10, 10, cg::Color(0.7f, 0.7f, 0.7f, 1.0f));
+    moon->Translate(cg::vec3(2.6f, 0.0f, 0.0f)); // Ein Stück weiter als die Erde
+    scene.addObject(moon);
+
+    // Ein Würfel als "Raumstation"
+    auto station = std::make_shared<cg::Cube>(0.2f, cg::Color(0.8f, 0.1f, 0.1f, 1.0f));
+    station->Translate(cg::vec3(-1.5f, 1.0f, 0.5f));
+    station->Rotate(45.0f, 45.0f, 0.0f);
+    scene.addObject(station);
+
+    // Lichtquelle in der Sonne (Point Light)
+    auto sunLight = std::make_shared<cg::PointLight>(cg::Color(1.0f, 0.95f, 0.8f, 1.0f), 15.0f);
+    sunLight->Translate(cg::vec3(0.0f, 0.0f, 0.0f)); // Position in der Sonne
+    scene.addLight(sunLight);
+
+    // Schwaches Ambient Light für den Weltraum
+    auto ambient = std::make_shared<cg::AmbientLight>(cg::Color(1.0f, 1.0f, 1.0f, 1.0f), 0.1f);
+    scene.addLight(ambient);
 
     return scene;
 }

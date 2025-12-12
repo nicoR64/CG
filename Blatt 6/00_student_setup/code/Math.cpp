@@ -199,11 +199,34 @@ cg::vec3 cg::calculateBarycentricCoords(const Triangle2D& triangle, const cg::Po
     // TODO
     // Calculate the barycentric coordinates of the variable 'position' in the given triangle.
     // You can assume that 'position' is always inside 'triangle'.
-    float weight_a = 1.f;
-    float weight_b = 0.f;
-    float weight_c = 0.f;
+    const cg::vec2& a = triangle.points[0].position;
+    const cg::vec2& b = triangle.points[1].position;
+    const cg::vec2& c = triangle.points[2].position;
+    const cg::vec2& p = position;
 
-    return vec3(weight_a, weight_b, weight_c);
+    cg::vec2 v0 = b - a;
+    cg::vec2 v1 = c - a;
+    cg::vec2 v2 = p - a;
+
+    float d00 = glm::dot(v0, v0);
+    float d01 = glm::dot(v0, v1);
+    float d11 = glm::dot(v1, v1);
+    float d20 = glm::dot(v2, v0);
+    float d21 = glm::dot(v2, v1);
+
+    float denom = d00 * d11 - d01 * d01;
+
+    // Verhindern von Division durch Null (bei degenerierten Dreiecken)
+    if (std::abs(denom) < 1e-5f) 
+    {
+        return vec3(1.0f, 0.0f, 0.0f);
+    }
+
+    float v = (d11 * d20 - d01 * d21) / denom;
+    float w = (d00 * d21 - d01 * d20) / denom;
+    float u = 1.0f - v - w;
+
+    return vec3(u, v, w);
 }
 
 cg::Point3D cg::sphericalToCartesian(const float r, const float teta, const float phi)

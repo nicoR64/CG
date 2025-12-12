@@ -156,8 +156,8 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
             ///////
             // TODO
             // Transform the position of the point and the normal to world space.
-            vec4 point_world = zeroVec4();
-            vec3 normal_world = zeroVec3();
+            vec4 point_world = global_trafo * vec4(point.position, 1.0f);
+            vec3 normal_world = glm::normalize(vec3(global_trafo * vec4(point.normal, 0.0f)));
 
 
             // Calculate lighting
@@ -184,7 +184,36 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
                         // All relevant information from the light source is stored in colorInfo.
                         // Hint: The direction of the ray is from the light source to the object.
 
-                        //...
+                        // Vektor von der Oberfläche zur Lichtquelle (L)
+                        
+                        // 1. Position der Lichtquelle aus der Transformationsmatrix holen
+                        // Lichter erben von SceneObject, daher nutzen wir getTransformation()
+                        mat4 lightMat = light->getTransformation();
+                        vec3 lightPos = vec3(lightMat[3]); // Die 4. Spalte (Index 3) ist die Position
+                                        
+                        // 2. Vektor von der Oberfläche zur Lichtquelle (L)
+                        vec3 surfacePos = vec3(point_world);
+                        vec3 lightDir = lightPos - surfacePos;
+                                        
+                        // 3. Distanz d berechnen
+                        float d = glm::length(lightDir);
+                                        
+                        // 4. Normalisieren für Lambert (L dot N)
+                        vec3 L = glm::normalize(lightDir);
+                        vec3 N = glm::normalize(normal_world);
+                                        
+                        // 5. Lambert-Faktor (Cosinus-Gesetz): max(0, N * L)
+                        float NdotL = std::max(0.0f, glm::dot(N, L));
+                                        
+                        // 6. Abschwächungsfaktor k_d = (0.001 + d^2)^-1
+                        float kd = 1.0f / (0.001f + d * d);
+                                        
+                        // 7. Berechnung der diffusen Farbe
+                        // (Lichtfarbe * Intensität * Lambert * Abschwächung)
+                        vec3 diffuse = vec3(colorInfo.color) * colorInfo.intensity * NdotL * kd;
+                                        
+                        // 8. Zur bestehenden Farbe addieren (Alpha bleibt 0.0 beim Addieren)
+                        color += vec4(diffuse, 0.0f);
                     }
                 }
             }
@@ -298,8 +327,56 @@ void cg::Rasterizer::rasterizeLine(const cg::Triangle::Point& point_start, const
     ///////
     // TODO
     // Implement Bresenham's line algorithm for rasterizing a single line.
+    // Start- und Endkoordinaten (Integer für Pixelraster)
+    int x0 = static_cast<int>(std::round(point_start.position.x));
+    int y0 = static_cast<int>(std::round(point_start.position.y));
+    int x1 = static_cast<int>(std::round(point_end.position.x));
+    int y1 = static_cast<int>(std::round(point_end.position.y));
 
-    //...
+    // Differenzen und Schrittrichtung berechnen
+    int dx = std::abs(x1 - x0);
+    int dy = std::abs(y1 - y0);
+    int sx = (x0 < x1) ? 1 : -1;
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx - dy;
+
+    // Für die Interpolation von Z und Farbe
+    float totalDist = std::sqrt(std::pow(x1 - x0, 2) + std::pow(y1 - y0, 2));
+    if (totalDist == 0.0f) totalDist = 1.0f; // Schutz vor Div/0
+
+    int startX = x0;
+    int startY = y0;
+
+    while (true)
+    {
+        // Interpolationsfaktor t (0.0 bis 1.0)
+        float currentDist = std::sqrt(std::pow(x0 - startX, 2) + std::pow(y0 - startY, 2));
+        float t = currentDist / totalDist;
+        if (t > 1.0f) t = 1.0f;
+
+        // Lineare Interpolation von Z und Farbe
+        float z = (1.0f - t) * point_start.position.z + t * point_end.position.z;
+        Color c = (1.0f - t) * point_start.color + t * point_end.color;
+
+        // Pixel setzen [cite: 48]
+        setPixel(Point3D(static_cast<float>(x0), static_cast<float>(y0), z), c);
+
+        // Abbruchbedingung
+        if (x0 == x1 && y0 == y1) break;
+
+        // Fehlerterm aktualisieren
+        int e2 = 2 * err;
+        if (e2 > -dy)
+        {
+            err -= dy;
+            x0 += sx;
+        }
+        if (e2 < dx)
+        {
+            err += dx;
+            y0 += sy;
+        }
+    }
 }
 
 void cg::Rasterizer::setPixel(const Point3D& point, Color color)
