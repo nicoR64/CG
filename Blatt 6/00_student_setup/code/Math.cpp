@@ -159,20 +159,20 @@ cg::Color cg::blue()
 }
 
 cg::Triangle2D::Triangle2D()
-{ }
+{
+}
 
-cg::Triangle2D::Triangle2D(const cg::Triangle& other)
+cg::Triangle2D::Triangle2D(const cg::Triangle &other)
 {
     this->points = {
-        Point{ Point2D(other.points[0].position), other.points[0].color },
-        Point{ Point2D(other.points[1].position), other.points[1].color },
-        Point{ Point2D(other.points[2].position), other.points[2].color }
-    };
+        Point{Point2D(other.points[0].position), other.points[0].color},
+        Point{Point2D(other.points[1].position), other.points[1].color},
+        Point{Point2D(other.points[2].position), other.points[2].color}};
 }
 
 namespace
 {
-    bool sameSide(const cg::Point2D& first, const cg::Point2D& second, const cg::Point2D& line_start, const cg::Point2D& line_end)
+    bool sameSide(const cg::Point2D &first, const cg::Point2D &second, const cg::Point2D &line_start, const cg::Point2D &line_end)
     {
         const auto line = line_end - line_start;
         const auto first_line = first - line_start;
@@ -185,23 +185,37 @@ namespace
     }
 }
 
-bool cg::pointInTriangle(const cg::Triangle2D& triangle, const cg::Point2D& position)
+bool cg::pointInTriangle(const cg::Triangle2D &triangle, const cg::Point2D &position)
 {
-    return sameSide(position, triangle.points[0].position, triangle.points[1].position, triangle.points[2].position)
-        && sameSide(position, triangle.points[1].position, triangle.points[0].position, triangle.points[2].position)
-        && sameSide(position, triangle.points[2].position, triangle.points[0].position, triangle.points[1].position);
+    return sameSide(position, triangle.points[0].position, triangle.points[1].position, triangle.points[2].position) && sameSide(position, triangle.points[1].position, triangle.points[0].position, triangle.points[2].position) && sameSide(position, triangle.points[2].position, triangle.points[0].position, triangle.points[1].position);
 }
 
-
-cg::vec3 cg::calculateBarycentricCoords(const Triangle2D& triangle, const cg::Point2D& position)
+cg::vec3 cg::calculateBarycentricCoords(const Triangle2D &triangle, const cg::Point2D &position)
 {
     ///////
     // TODO
     // Calculate the barycentric coordinates of the variable 'position' in the given triangle.
     // You can assume that 'position' is always inside 'triangle'.
+    vec2 vecBA = triangle.points[1].position - triangle.points[0].position;
+    vec2 vecCA = triangle.points[2].position - triangle.points[0].position;
+    vec2 vecPA = position - triangle.points[0].position;
+
+    float dBA = glm::dot(vecBA, vecBA);
+    float dCA = glm::dot(vecCA, vecCA);
+    float dCBA = glm::dot(vecCA, vecBA);
+    float dPBA = glm::dot(vecPA, vecBA);
+    float dPCA = glm::dot(vecPA, vecCA);
+
     float weight_a = 1.f;
     float weight_b = 0.f;
     float weight_c = 0.f;
+
+    float determinant = dBA * dCA - dCBA * dCBA;
+
+    weight_b = (dCA * dPBA - dCBA * dPCA) / determinant;
+    weight_c = (dBA * dPCA - dCBA * dPBA) / determinant;
+
+    weight_a = 1 - weight_b - weight_c;
 
     return vec3(weight_a, weight_b, weight_c);
 }
