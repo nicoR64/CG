@@ -157,7 +157,7 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
             // TODO
             // Transform the position of the point and the normal to world space.
             vec4 point_world = global_trafo * vec4(point.position, 1);
-            vec3 normal_world = glm::normalize(global_trafo * vec4(point.normal, 0));
+            vec3 normal_world = global_trafo * vec4(point.normal, 0);
 
 
             // Calculate lighting
@@ -183,14 +183,17 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
                         // and add it to the color already calculated from previous light sources.
                         // All relevant information from the light source is stored in colorInfo.
                         // Hint: The direction of the ray is from the light source to the object.
-                        float distanceFactor = 1.0f / (0.001f + colorInfo.ray.length() * colorInfo.ray.length());
-                        float lambertFactor = std::max(glm::dot(normal_world, glm::normalize(-colorInfo.ray)), 0.0f);
-                        vec4 newColor = colorInfo.color;
-                        float intensityFactor = colorInfo.intensity * distanceFactor * lambertFactor;
-                        newColor.r *= intensityFactor;
-                        newColor.g *= intensityFactor;
-                        newColor.b *= intensityFactor;
-                        color += point.color * newColor;
+                        const float d = glm::length(colorInfo.ray);
+                        const float k_d = 1.0f / (0.001f + d * d);
+                        const vec3 N = glm::normalize(normal_world);
+                        const vec3 L = glm::normalize(-colorInfo.ray);
+                        const float lambert = std::max(glm::dot(N, L), 0.0f);
+                        const float lightFactor = colorInfo.intensity * k_d * lambert;
+                        vec4 lightColor = colorInfo.color;
+                        lightColor.r *= lightFactor;
+                        lightColor.g *= lightFactor;
+                        lightColor.b *= lightFactor;
+                        color += point.color * lightColor;
                         //...
                     }
                 }
@@ -201,7 +204,7 @@ void cg::Rasterizer::drawObject(const std::shared_ptr<cg::SceneObject> object, c
             // Transform to clip space
             auto point_clip = viewProjection * point_world;
 
-            point.validXY = point_clip.x > -point_clip.w && point_clip.x < point_clip.w&& point_clip.y > -point_clip.w && point_clip.y < point_clip.w;
+            point.validXY = point_clip.x > -point_clip.w && point_clip.x < point_clip.w && point_clip.y > -point_clip.w && point_clip.y < point_clip.w;
             point.validZ = point_clip.z > -point_clip.w && point_clip.z < point_clip.w;
 
             // Transform to screen space
@@ -302,83 +305,45 @@ void cg::Rasterizer::rasterizeFilled(const Triangle& triangle)
 
 void cg::Rasterizer::rasterizeLine(const cg::Triangle::Point& point_start, const cg::Triangle::Point& point_end)
 {
-    ///////
-    // TODO
-    // Implement Bresenham's line algorithm for rasterizing a single line.
-    float dx = point_end.position.x - point_start.position.x;
-    float dy = point_end.position.y - point_start.position.y;
+    int x0 = static_cast<int>(std::round(point_start.position.x));
+    int y0 = static_cast<int>(std::round(point_start.position.y));
+    int x1 = static_cast<int>(std::round(point_end.position.x));
+    int y1 = static_cast<int>(std::round(point_end.position.y));
 
-    float parallel_dx;
-    float parallel_dy;
+    int dx = std::abs(x1 - x0);
+    int dy = std::abs(y1 - y0);
+    int sx = (x0 < x1) ? 1 : -1;
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx - dy;
 
-    float diagonal_dx;
-    float diagonal_dy;
-    float delta_slow_direction;
-    float delta_fast_direction;
+    float total_dist = static_cast<float>(std::max(dx, dy));
+    float current_step = 0.0f;
 
-    float inc_x = glm::sign(dx);
-    float inc_y = glm::sign(dy);
-    
-    if(dx < 0)
+    while (true)
     {
-        dx = -dx;
-    }
-    if(dy < 0)
-    {
-        dy = -dy;
-    }
-    
-    // assign larger distance and thus movements in parallel steps and diagonal steps
-    if(dx > dy)
-    {
-        // this case represents x-axis as the fast moving direction
-        parallel_dx = inc_x;
-        parallel_dy = 0;
-        diagonal_dx = inc_x;
-        diagonal_dy = inc_y;
-        
-        delta_slow_direction = dy;
-        delta_fast_direction = dx;
-    }
-    else
-    {
-        // y-axis is faster moving
-        parallel_dx = 0;
-        parallel_dy = inc_y;
-        diagonal_dx = inc_x;
-        diagonal_dy = inc_y;
-        
-        delta_slow_direction = dx;
-        delta_fast_direction = dy;
-    }
-    
-    float x = point_start.position.x;
-    float y = point_start.position.y;
-    float error = delta_fast_direction / 2;
-    setPixel(Point3D(static_cast<float>(x), static_cast<float>(y), static_cast<float>(point_start.position.z)), point_start.color); // color
+        float t = (total_dist > 0.0f) ? (current_step / total_dist) : 0.0f;
+        float z = (1.0f - t) * point_start.position.z + t * point_end.position.z;
 
-    for (int i = 0; i <= delta_fast_direction; ++i)
-    {
-        error -= delta_slow_direction;
-        if (error < 0)
+        cg::Color color = (1.0f - t) * point_start.color + t * point_end.color;
+
+        setPixel(Point3D(static_cast<float>(x0), static_cast<float>(y0), z), color);
+
+        if (x0 == x1 && y0 == y1) break;
+
+        int e2 = 2 * err;
+        if (e2 > -dy)
         {
-            error += delta_fast_direction;
-            x += diagonal_dx;
-            y += diagonal_dy;
+            err -= dy;
+            x0 += sx;
         }
-        else
+        if (e2 < dx)
         {
-            x += parallel_dx;
-            y += parallel_dy;
+            err += dx;
+            y0 += sy;
         }
 
-        float weight = glm::length(vec3(x,y,0) - point_start.position) / glm::length(point_end.position - point_start.position);
-        float z = (1- weight) * point_start.position.z + weight * point_end.position.z;
-        vec4 color = (1- weight) * point_start.color + weight * point_end.color;
-
-        setPixel(Point3D(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)), color);
+        current_step += 1.0f;
     }
-    //...
 }
 
 void cg::Rasterizer::setPixel(const Point3D& point, Color color)

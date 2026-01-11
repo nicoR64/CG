@@ -129,7 +129,29 @@ cg::Scene createOwnScene()
     // TODO
     // Create your own scene.
     // This task is optional, but the best scenes will be presented in the tutorial.
+    auto sphere1 = std::make_shared<cg::Sphere>(1.0f);
+    sphere1->Translate(cg::vec3(0.0f, 0.0f, 5.0f));
+    scene.addObject(sphere1);
 
+    auto sphere2 = std::make_shared<cg::Sphere>(0.8f);
+    sphere2->Translate(cg::vec3(-0.5f, -1.0f, 5.0f));
+    scene.addObject(sphere2);
+
+    auto sphere3 = std::make_shared<cg::Sphere>(0.8f);
+    sphere3->Translate(cg::vec3(0.5f, -1.0f, 5.0f));
+    scene.addObject(sphere3);
+
+    auto pointLight1 = std::make_shared<cg::PointLight>(cg::Color(1.0f, 0.0f, 0.0f, 1.0f), 40.0f);
+    pointLight1->Translate(cg::vec3(4.0f, 4.0f, 0.0f));
+    scene.addLight(pointLight1);
+
+    auto pointLight2 = std::make_shared<cg::PointLight>(cg::Color(0.0f, 1.0f, 0.0f, 1.0f), 40.0f);
+    pointLight2->Translate(cg::vec3(4.0f, -4.0f, 0.0f));
+    scene.addLight(pointLight2);
+
+    auto pointLight3 = std::make_shared<cg::PointLight>(cg::Color(0.0f, 0.0f, 1.0f, 0.0f), 40.0f);
+    pointLight3->Translate(cg::vec3(-4.0f, -4.0f, 0.0f));
+    scene.addLight(pointLight3);
 
     return scene;
 }

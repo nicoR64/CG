@@ -192,23 +192,21 @@ bool cg::pointInTriangle(const cg::Triangle2D &triangle, const cg::Point2D &posi
 
 cg::vec3 cg::calculateBarycentricCoords(const Triangle2D &triangle, const cg::Point2D &position)
 {
-    ///////
-    // TODO
-    // Calculate the barycentric coordinates of the variable 'position' in the given triangle.
-    // You can assume that 'position' is always inside 'triangle'.
-    vec2 vecBA = triangle.points[1].position - triangle.points[0].position;
-    vec2 vecCA = triangle.points[2].position - triangle.points[0].position;
-    vec2 vecPA = position - triangle.points[0].position;
+    const float x0 = triangle.points[0].position.x;
+    const float y0 = triangle.points[0].position.y;
+    const float x1 = triangle.points[1].position.x;
+    const float y1 = triangle.points[1].position.y;
+    const float x2 = triangle.points[2].position.x;
+    const float y2 = triangle.points[2].position.y;
 
-    float dBA = glm::dot(vecBA, vecBA);
-    float dCA = glm::dot(vecCA, vecCA);
-    float dCBA = glm::dot(vecCA, vecBA);
-    float dPBA = glm::dot(vecPA, vecBA);
-    float dPCA = glm::dot(vecPA, vecCA);
+    const float x = position.x;
+    const float y = position.y;
 
-    float weight_a = 1.f;
-    float weight_b = 0.f;
-    float weight_c = 0.f;
+    const float denominator = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2);
+
+    float weight_a = ((y1 - y2) * (x - x2) + (x2 - x1) * (y - y2)) / denominator;
+    float weight_b = ((y2 - y0) * (x - x2) + (x0 - x2) * (y - y2)) / denominator;
+    float weight_c = 1.0f - weight_a - weight_b;
 
     float determinant = dBA * dCA - dCBA * dCBA;
 
