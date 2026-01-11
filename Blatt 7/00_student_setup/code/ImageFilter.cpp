@@ -113,7 +113,17 @@ namespace cg
             ///////
             // TODO
             // Construct an edge detection kernel
+            k.setValue(-1, -1, 0.0f);
+            k.setValue(1, 1, 0.0f);
+            k.setValue(-1, 1, 0.0f);
+            k.setValue(1, -1, 0.0f);
 
+            k.setValue(0, -1, -1.0f);
+            k.setValue(-1, 0, -1.0f);
+            k.setValue(0, 1, -1.0f);
+            k.setValue(1, 0, -1.0f);
+
+            k.setValue(0, 0, 4.0f);
             // ...
 
             return k;

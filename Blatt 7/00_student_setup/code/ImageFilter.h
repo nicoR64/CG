@@ -12,7 +12,12 @@ namespace cg
 {
     namespace filter
     {
-        enum BorderPolicy { CLAMP_TO_EDGE, MIRROR, REPEAT };
+        enum BorderPolicy
+        {
+            CLAMP_TO_EDGE,
+            MIRROR,
+            REPEAT
+        };
 
         // use empty namespace for "private" functions
         namespace
@@ -29,7 +34,7 @@ namespace cg
              */
             template <cg::color_space_t color_space>
             std::pair<unsigned int, unsigned int> offsetImageCoordinates(
-                image<color_space> const& image,
+                image<color_space> const &image,
                 std::pair<unsigned int, unsigned int> coordinates,
                 std::pair<int, int> offset,
                 BorderPolicy border_policy)
@@ -47,8 +52,7 @@ namespace cg
                     case cg::filter::CLAMP_TO_EDGE:
                         return std::make_pair(
                             std::min(std::max(static_cast<int>(std::get<0>(coordinates)) + std::get<0>(offset), 0), static_cast<int>(image.get_width() - 1)),
-                            std::min(std::max(static_cast<int>(std::get<1>(coordinates)) + std::get<1>(offset), 0), static_cast<int>(image.get_height() - 1))
-                        );
+                            std::min(std::max(static_cast<int>(std::get<1>(coordinates)) + std::get<1>(offset), 0), static_cast<int>(image.get_height() - 1)));
 
                         break;
 
@@ -65,7 +69,7 @@ namespace cg
                         x = std::min(std::max(x, 0), static_cast<int>(image.get_width() - 1));
                         y = std::min(std::max(y, 0), static_cast<int>(image.get_height() - 1));
 
-                        return{ x,y };
+                        return {x, y};
 
                         break;
 
@@ -78,7 +82,7 @@ namespace cg
 
                         // ...
 
-                        return{ x,y };
+                        return {x, y};
 
                         break;
 
@@ -92,8 +96,7 @@ namespace cg
                 {
                     return std::make_pair(
                         std::get<0>(coordinates) + std::get<0>(offset),
-                        std::get<1>(coordinates) + std::get<1>(offset)
-                    );
+                        std::get<1>(coordinates) + std::get<1>(offset));
                 }
             }
         }
@@ -117,9 +120,9 @@ namespace cg
              */
             float getValue(int x, int y) const;
 
-            float* data();
+            float *data();
 
-            float const* data() const;
+            float const *data() const;
 
             /**
              * Returns the min and max horizontal coordinate within the kernel.
@@ -128,10 +131,10 @@ namespace cg
              */
             std::pair<int, int> getHorizontalRange() const;
             /**
-            * Returns the min and max vertical coordinate within the kernel.
-            * Coordinates are given relative to the center of the kernel,
-            * i.e. -2 and 2 for a kernel with a vertical extent of 2.
-            */
+             * Returns the min and max vertical coordinate within the kernel.
+             * Coordinates are given relative to the center of the kernel,
+             * i.e. -2 and 2 for a kernel with a vertical extent of 2.
+             */
             std::pair<int, int> getVerticalRange() const;
 
             /**
@@ -145,8 +148,8 @@ namespace cg
             std::pair<unsigned int, unsigned int> m_extents;
 
             /**
-            * Compute actual data index for a position given relative to the center of the kernel.
-            */
+             * Compute actual data index for a position given relative to the center of the kernel.
+             */
             size_t getDataIndex(int x, int y) const;
         };
 
@@ -165,19 +168,19 @@ namespace cg
         /** Apply a filter kernel to an image. */
         template <color_space_t color_space>
         image<color_space> filterImage(
-            image<color_space> const& original,
-            Kernel const& filter_kernel,
+            image<color_space> const &original,
+            Kernel const &filter_kernel,
             BorderPolicy border_policy = CLAMP_TO_EDGE);
 
         /** Computes a channelwise absolute value version of a given image.*/
         template <cg::color_space_t color_space>
         cg::image<color_space> absValueImage(
-            image<color_space> const& original);
+            image<color_space> const &original);
 
         /** Compute an image blurred with a 2D gaussian filter. */
         template <cg::color_space_t color_space>
         cg::image<color_space> gaussian2D(
-            image<color_space> const& original,
+            image<color_space> const &original,
             std::pair<int, int> kernelExtents,
             float sigma,
             BorderPolicy borders = CLAMP_TO_EDGE);
@@ -185,7 +188,7 @@ namespace cg
         /** Compute an image blurred with a seperated 2D gaussian filter. */
         template <cg::color_space_t color_space>
         cg::image<color_space> seperatedGaussian2D(
-            image<color_space> const& original,
+            image<color_space> const &original,
             std::pair<int, int> kernelExtents,
             float sigma,
             BorderPolicy borders = CLAMP_TO_EDGE);
@@ -193,13 +196,13 @@ namespace cg
         /** Computes an image with extracted edges. */
         template <cg::color_space_t color_space>
         cg::image<color_space> edgeDetection2D(
-            image<color_space> const& original,
+            image<color_space> const &original,
             BorderPolicy borders = CLAMP_TO_EDGE);
     }
 }
 
 template <cg::color_space_t color_space>
-cg::image<color_space> cg::filter::filterImage(image<color_space> const& original, Kernel const& filter_kernel, BorderPolicy border_policy)
+cg::image<color_space> cg::filter::filterImage(image<color_space> const &original, Kernel const &filter_kernel, BorderPolicy border_policy)
 {
     cg::image<color_space> filtered(original.get_width(), original.get_height());
 
@@ -208,7 +211,7 @@ cg::image<color_space> cg::filter::filterImage(image<color_space> const& origina
         for (unsigned int i = 0; i < original.get_width(); ++i)
         {
             typename cg::image<color_space>::tuple_type pixel_value;
-            for (auto& channel : pixel_value)
+            for (auto &channel : pixel_value)
                 channel = 0;
 
             ///////
@@ -218,7 +221,32 @@ cg::image<color_space> cg::filter::filterImage(image<color_space> const& origina
             // Use "pixel_value" as intermediate storage for the computation and store the final result in "filtered".
             // Iterate over the kernel and use the function "offsetImageCoordinates" to get valid image coordinates for
             // accessing the original image data.
+            const int num_channels = cg::color_channels<color_space>::value;
+            std::vector<float> accumulators(num_channels, 0.0f);
 
+            auto vert_range = filter_kernel.getVerticalRange();
+            auto hor_range = filter_kernel.getHorizontalRange();
+
+            for (int ky{vert_range.first}; ky <= vert_range.second; ++ky)
+            {
+                for (int kx{hor_range.first}; kx <= hor_range.second; ++kx)
+                {
+                    float weight = filter_kernel.getValue(kx, ky);
+
+                    std::pair<unsigned int, unsigned int> source_coords = offsetImageCoordinates(original, std::make_pair(i, j), std::make_pair(kx, ky), border_policy);
+                    auto source_pixel = original.at(source_coords.first, source_coords.second);
+
+                    for (int c{0}; c < num_channels; ++c)
+                    {
+                        accumulators[c] += static_cast<float>(source_pixel[c]) * weight;
+                    }
+                }
+            }
+
+            for (int c{0}; c < num_channels; ++c)
+            {
+                pixel_value[c] = accumulators[c];
+            }
             // ...
 
             filtered(i, j) = pixel_value;
@@ -229,7 +257,7 @@ cg::image<color_space> cg::filter::filterImage(image<color_space> const& origina
 }
 
 template <cg::color_space_t color_space>
-cg::image<color_space> cg::filter::absValueImage(image<color_space> const& original)
+cg::image<color_space> cg::filter::absValueImage(image<color_space> const &original)
 {
     cg::image<color_space> filtered(original.get_width(), original.get_height());
 
@@ -253,7 +281,7 @@ cg::image<color_space> cg::filter::absValueImage(image<color_space> const& origi
 
 template <cg::color_space_t color_space>
 cg::image<color_space> cg::filter::gaussian2D(
-    image<color_space> const& original,
+    image<color_space> const &original,
     std::pair<int, int> kernelExtents,
     float sigma,
     BorderPolicy borders)
@@ -267,13 +295,12 @@ cg::image<color_space> cg::filter::gaussian2D(
     // standard deviation sigma.
     // Use it to filter the original image and store the result in img.
 
-
     return img;
 }
 
 template <cg::color_space_t color_space>
 cg::image<color_space> cg::filter::seperatedGaussian2D(
-    image<color_space> const& original,
+    image<color_space> const &original,
     std::pair<int, int> kernelExtents,
     float sigma,
     BorderPolicy borders)
@@ -287,13 +314,12 @@ cg::image<color_space> cg::filter::seperatedGaussian2D(
     // standard deviation sigma.
     // Use them to filter the original image and store the result in img.
 
-
     return img;
 }
 
 template <cg::color_space_t color_space>
 cg::image<color_space> cg::filter::edgeDetection2D(
-    image<color_space> const& original, BorderPolicy borders)
+    image<color_space> const &original, BorderPolicy borders)
 {
     image<color_space> img = original;
 
@@ -303,7 +329,10 @@ cg::image<color_space> cg::filter::edgeDetection2D(
     // Generate an edge detection filter kernel, use it to filter the
     // original image. Calculate an absolute value version of this intermediate
     // image and store the result in img.
+    Kernel edgeKernel = buildEdgeDetectionKernel();
 
+    auto filtered = filterImage(original, edgeKernel, borders);
+    img = absValueImage(filtered);
 
     return img;
 }
