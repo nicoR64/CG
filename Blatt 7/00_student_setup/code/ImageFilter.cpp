@@ -2,6 +2,8 @@
 
 #include "ImageFilter.h"
 
+#define _USE_MATH_DEFINES
+
 namespace cg
 {
     namespace filter
@@ -21,15 +23,36 @@ namespace cg
                 // 2. Sum up all values of the kernel.
                 // 3. Normalize the filter kernel values with the accumulated
                 //    sum.
-
                 float sum = 0.0f;
 
+                const float norm_factor = 1 / (2 * M_PI * sigma * sigma);
+
+                const auto vert_range = k.getVerticalRange();
+                const auto hor_range = k.getHorizontalRange();
+                
                 // Compute the individual entries and their sum
                 // ...
-
+                for (int y{vert_range.first}; y <= vert_range.second; ++y)
+                {
+                    for (int x{hor_range.first}; x <= hor_range.second; ++x)
+                    {
+                        float exponent = - (x*x + y*y)/(2*sigma*sigma);
+                        float gauss_value = norm_factor * exp(exponent);
+                        k.setValue(x, y, gauss_value);
+                        sum += gauss_value;
+                    }
+                }
+                
                 // Normalize the filter kernel
                 // ...
-
+                for (int y{vert_range.first}; y <= vert_range.second; ++y)
+                {
+                    for (int x{hor_range.first}; x <= hor_range.second; ++x)
+                    {
+                        float gauss_value = k.getValue(x, y);
+                        k.setValue(x, y, gauss_value / sum);
+                    }
+                }
             }
         }
 

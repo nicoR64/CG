@@ -62,7 +62,18 @@ namespace cg
                         //
                         // Implement a border policy that mirrors out of bounds
                         // coordinates at the image border.
+                        x = abs(x);
+                        y = abs(y);
 
+                        if (x >= static_cast<int>(image.get_width()))
+                        {
+                            x = 2 * (static_cast<int>(image.get_width()) - 1) - x;
+                        }
+
+                        if (y >= static_cast<int>(image.get_height()))
+                        {
+                            y = 2 * (static_cast<int>(image.get_height()) - 1) - y;
+                        }
                         // ...
 
                         // if mirrored coords are out of bounds again -> clamp
@@ -74,18 +85,23 @@ namespace cg
                         break;
 
                     case cg::filter::REPEAT:
+                    {
                         ///////
                         // TODO
                         //
                         // Implement a border policy that virtually repeats the image for
                         // out of bounds coordinates.
+                        int width = static_cast<int>(image.get_width());
+                        int height = static_cast<int>(image.get_height());
 
+                        x = ((x % width) + width) % width;
+                        y = ((y % height) + height) % height;
                         // ...
 
                         return {x, y};
 
                         break;
-
+                    }
                     default:
                         throw std::exception();
 
@@ -294,6 +310,8 @@ cg::image<color_space> cg::filter::gaussian2D(
     // Generate a 2D gaussian filter kernel with the given extents and
     // standard deviation sigma.
     // Use it to filter the original image and store the result in img.
+    Kernel gaussian_kernel = build2DGaussianKernel(kernelExtents, sigma);
+    img = filterImage(original, gaussian_kernel, borders);
 
     return img;
 }
@@ -313,6 +331,11 @@ cg::image<color_space> cg::filter::seperatedGaussian2D(
     // Generate seperated gaussian filter kernels, with the given extents and
     // standard deviation sigma.
     // Use them to filter the original image and store the result in img.
+    Kernel hor_gaussian_kernel = build1DHorizontalGaussianKernel(kernelExtents.first, sigma);
+    Kernel vert_gaussian_kernel = build1DVerticalGaussianKernel(kernelExtents.second, sigma);
+
+    auto filtered_hor_img = filterImage(original, hor_gaussian_kernel, borders);
+    img = filterImage(filtered_hor_img, vert_gaussian_kernel, borders);
 
     return img;
 }
